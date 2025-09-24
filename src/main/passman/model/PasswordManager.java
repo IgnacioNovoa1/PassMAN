@@ -1,3 +1,5 @@
+package main.passman.model;
+
 import java.util.Scanner;
 
 public class PasswordManager {
