@@ -1,4 +1,4 @@
-package passman.model;
+package passman.core;
 
 import passman.model.Usuario;
 import java.util.Scanner;
@@ -7,7 +7,6 @@ public class RegistrarUsuario {
 
     private static Usuario usuarioRegistrado;
 
-    // Método para registrar el usuario
     public static Usuario registrar(Scanner scanner) {
         if (usuarioRegistrado != null) {
             System.out.println("Ya tienes un usuario registrado. Por favor, inicia sesión.");
@@ -24,7 +23,6 @@ public class RegistrarUsuario {
         return usuarioRegistrado;
     }
 
-    // Método para obtener el usuario registrado
     public static Usuario getUsuarioRegistrado() {
         return usuarioRegistrado;
     }
