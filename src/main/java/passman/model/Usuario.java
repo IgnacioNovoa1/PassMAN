@@ -9,7 +9,7 @@ public class Usuario {
 
     private String rut;
     private String cumpleaños;
-    private String contraseña; // Hash de la contraseña maestra.
+    private String contraseña; // Hash de la contraseña maestra
 
     private List<Map<String, String>> bovedaDeContraseñas;
 
