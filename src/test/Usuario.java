@@ -8,7 +8,7 @@ public class Usuario {
 
     private String rut;
     private String cumpleanos;
-    private String contrasena; // Hash de la contraseña maestra
+    private String contrasena; // Hash de la contrasena maestra
 
     private List<Map<String, String>> bovedaDeContrasenas;
 
