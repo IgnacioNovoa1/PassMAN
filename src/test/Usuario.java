@@ -7,33 +7,33 @@ import java.util.Map;
 public class Usuario {
 
     private String rut;
-    private String cumpleaños;
-    private String contraseña; // Hash de la contraseña maestra
+    private String cumpleanos;
+    private String contrasena; // Hash de la contraseña maestra
 
-    private List<Map<String, String>> bovedaDeContraseñas;
+    private List<Map<String, String>> bovedaDeContrasenas;
 
     public Usuario() {
-        this.bovedaDeContraseñas = new ArrayList<>();
+        this.bovedaDeContrasenas = new ArrayList<>();
     }
 
     // Constructor con datos iniciales (para registro)
-    public Usuario(String rut, String cumpleaños, String contraseña) {
+    public Usuario(String rut, String cumpleanos, String contrasena) {
         this.rut = rut;
-        this.cumpleaños = cumpleaños;
-        this.contraseña = contraseña;
-        this.bovedaDeContraseñas = new ArrayList<>();
+        this.cumpleanos = cumpleanos;
+        this.contrasena = contrasena;
+        this.bovedaDeContrasenas = new ArrayList<>();
     }
 
     public String getRut() { return rut; }
-    public String getCumpleaños() { return cumpleaños; }
-    public String getContraseña() { return contraseña; } // Hash del master
-    public List<Map<String, String>> getBovedaDeContraseñas() { return bovedaDeContraseñas; }
+    public String getCumpleanos() { return cumpleanos; }
+    public String getContrasena() { return contrasena; } // Hash del master
+    public List<Map<String, String>> getBovedaDeContrasenas() { return bovedaDeContrasenas; }
 
     // --- Setters (Solo para uso en actualización o registro) ---
     public void setRut(String rut) { this.rut = rut; }
-    public void setCumpleaños(String cumpleaños) { this.cumpleaños = cumpleaños; }
-    public void setContraseña(String contraseña) { this.contraseña = contraseña; } // Hash del master
-    public void setBovedaDeContraseñas(List<Map<String, String>> bovedaDeContraseñas) {
-        this.bovedaDeContraseñas = bovedaDeContraseñas;
+    public void setCumpleanos(String cumpleaños) { this.cumpleanos = cumpleanos; }
+    public void setContrasena(String contraseña) { this.contrasena = contrasena; } // Hash del master
+    public void setBovedaDeContrasenas(List<Map<String, String>> bovedaDeContrasenas) {
+        this.bovedaDeContrasenas = bovedaDeContrasenas;
     }
 }
