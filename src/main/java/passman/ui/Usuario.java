@@ -1,4 +1,4 @@
-package test;
+package passman.ui;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,8 +31,8 @@ public class Usuario {
 
     // --- Setters (Solo para uso en actualización o registro) ---
     public void setRut(String rut) { this.rut = rut; }
-    public void setCumpleanos(String cumpleaños) { this.cumpleanos = cumpleanos; }
-    public void setContrasena(String contraseña) { this.contrasena = contrasena; } // Hash del master
+    public void setCumpleanos(String cumpleanos) { this.cumpleanos = cumpleanos; }
+    public void setContrasena(String contrasena) { this.contrasena = contrasena; } // Hash del master
     public void setBovedaDeContrasenas(List<Map<String, String>> bovedaDeContrasenas) {
         this.bovedaDeContrasenas = bovedaDeContrasenas;
     }
