@@ -3,16 +3,16 @@ package passman.ui;
 public class main {
 
     // Dependencias
-    private static final GestorArchivos GESTOR_ARCHIVOS = new GestorArchivos();
-    private static final PassManService SERVICE = new PassManService(GESTOR_ARCHIVOS);
-    private static final MenuManager MENU_MANAGER = new MenuManager(SERVICE); 
+    private static final GestorArchivos Gestor = new GestorArchivos();
+    private static final PassManService Service = new PassManService(Gestor);
+    private static final MenuManager Menu = new MenuManager(Service); 
 
     public static void main(String[] args) {
         // Lógica delegada al MenuManager
-        String usuarioAutenticado = MENU_MANAGER.inicio();
+        String usuarioAutenticado = Menu.inicio();
         
         if (usuarioAutenticado != null) {
-            MENU_MANAGER.menuPrincipal(usuarioAutenticado);
+            Menu.menuPrincipal(usuarioAutenticado);
         }
     }
 }
