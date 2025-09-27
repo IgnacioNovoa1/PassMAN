@@ -89,4 +89,66 @@ public class PassManService {
         gestorArchivos.guardarUsuarios(datos);
         System.out.println("Contraseña guardada correctamente.");
     }
+    public boolean editarContraseña(String usuario, int indice, String nuevaContraseña) {
+        Map<String, Usuario> datos = gestorArchivos.cargarUsuarios();
+        Usuario user = datos.get(usuario);
+        List<Map<String, String>> boveda = user.getBovedaDeContraseñas();
+
+        if (indice < 0 || indice >= boveda.size()) {
+            return false;
+        }
+
+        String cifrada = CifradoCesar.cifrar(nuevaContraseña, DESPLAZAMIENTO);
+
+        boveda.get(indice).put("contraseña", cifrada);
+        gestorArchivos.guardarUsuarios(datos);
+        return true;
+    }
+
+    public boolean esContraseñaDebil(String contraseña, String usuario) {
+        Map<String, Usuario> datos = gestorArchivos.cargarUsuarios();
+        Usuario user = datos.get(usuario);
+
+        String rutDescifrado = CifradoCesar.descifrar(user.getRut(), DESPLAZAMIENTO);
+        String cumpleDescifrado = CifradoCesar.descifrar(user.getCumpleaños(), DESPLAZAMIENTO);
+
+        // 1. Contiene datos personales
+        if (contraseña.contains(rutDescifrado) || contraseña.contains(cumpleDescifrado)) {
+            return true;
+        }
+
+        // 2. Todos los dígitos iguales (Regex: cualquier dígito seguido de sí mismo 3 veces)
+        if (contraseña.matches("(\\d)\\1{3}")) {
+            return true;
+        }
+
+        // 3. Progresión aritmética simple (ej: 1234, 4321, 2468)
+        try {
+            int d0 = Character.getNumericValue(contraseña.charAt(0));
+            int d1 = Character.getNumericValue(contraseña.charAt(1));
+            int d2 = Character.getNumericValue(contraseña.charAt(2));
+            int d3 = Character.getNumericValue(contraseña.charAt(3));
+
+            int diff = d1 - d0;
+            if (d2 - d1 == diff && d3 - d2 == diff) {
+                return true;
+            }
+        } catch (Exception ignored) {
+            // Ignorar errores, la validación de formato se hace en Main
+        }
+
+        return false;
+    }
+
+    public String generarContraseñaFuerte(String usuario) {
+        while (true) {
+            StringBuilder sugerencia = new StringBuilder();
+            for (int i = 0; i < 4; i++) {
+                sugerencia.append(random.nextInt(10)); // Dígito aleatorio
+            }
+            if (!esContraseñaDebil(sugerencia.toString(), usuario)) {
+                return sugerencia.toString();
+            }
+        }
+    }
 }
