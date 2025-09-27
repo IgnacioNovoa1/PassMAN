@@ -10,6 +10,7 @@ public class Usuario {
     private String rut;
     private String cumpleanos;
     private String contrasena; // Hash de la contrasena maestra
+    private int desplazamiento;
 
     private List<Map<String, String>> bovedaDeContrasenas;
 
@@ -23,6 +24,7 @@ public class Usuario {
         this.cumpleanos = cumpleanos;
         this.contrasena = contrasena;
         this.bovedaDeContrasenas = new ArrayList<>();
+        this.desplazamiento = 3;
     }
 
     public String getRut() { return rut; }
@@ -39,9 +41,10 @@ public class Usuario {
     }
 
     public void verContrasenas(String usuario) {
-        Map<String, Usuario> datos = gestorArchivos.cargarUsuarios();
+        GestorArchivos gestor = new GestorArchivos();
+        Map<String, Usuario> datos = gestor.cargarUsuarios();
         Usuario user = datos.get(usuario);
-        List<Map<String, String>> boveda = user.getBovedaDeContraseñas();
+        List<Map<String, String>> boveda = user.getBovedaDeContrasenas();
 
         if (boveda.isEmpty()) {
             System.out.println("No hay contraseñas guardadas.");
@@ -54,24 +57,25 @@ public class Usuario {
             String servicio = entrada.get("servicio");
             String contrasenaCifrada = entrada.get("contraseña");
 
-            String contrasenaDescifrada = CifradoCesar.descifrar(contrasenaCifrada, DESPLAZAMIENTO);
+            String contrasenaDescifrada = CifradoCesar.descifrar(contrasenaCifrada, this.desplazamiento);
 
             System.out.printf("%d. Servicio: %s | Contraseña: %s\n", i + 1, servicio, contrasenaDescifrada);
         }
     }
 
     public void guardarContrasena(String usuario, String servicio, String contrasena) {
-        Map<String, Usuario> datos = gestorArchivos.cargarUsuarios();
+        GestorArchivos gestor = new GestorArchivos();
+        Map<String, Usuario> datos = gestor.cargarUsuarios();
         Usuario user = datos.get(usuario);
 
-        String cifrada = CifradoCesar.cifrar(contrasena, DESPLAZAMIENTO);
+        String cifrada = CifradoCesar.cifrar(contrasena, this.desplazamiento);
 
         Map<String, String> nuevaEntrada = new HashMap<>();
         nuevaEntrada.put("servicio", servicio);
         nuevaEntrada.put("contraseña", cifrada);
 
         user.getBovedaDeContrasenas().add(nuevaEntrada);
-        gestorArchivos.guardarUsuarios(datos);
+        gestor.guardarUsuarios(datos);
         System.out.println("Contraseña guardada correctamente.");
     }
 }
