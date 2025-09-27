@@ -1,4 +1,4 @@
-package test;
+package passman.ui;
 import java.util.Scanner;
 // eeeee
 public class MenuManager {
@@ -34,7 +34,6 @@ public class MenuManager {
         System.out.print("Ingresa tu nombre de usuario: ");
         String nombreUsuario = SC.nextLine().trim();
 
-        // Uso del método interno de validación (ahora en esta clase)
         String rut = validarEntrada("Ingresa tu RUT (8 o 9 dígitos, sin guión): ", 8, 9, true, "Rut inválido. Ingresa un rut válido.");
         if (rut == null) return null;
 
