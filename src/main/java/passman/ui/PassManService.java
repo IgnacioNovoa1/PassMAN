@@ -74,6 +74,7 @@ public class PassManService {
         }
     }
 
+    //Permite guardar una contraseña cifrandola
     public void guardarContrasena(String usuario, String servicio, String contrasena) {
         Map<String, passman.ui.Usuario> datos = gestorArchivos.cargarUsuarios();
         passman.ui.Usuario user = datos.get(usuario);
