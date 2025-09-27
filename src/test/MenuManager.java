@@ -1,6 +1,6 @@
 package test;
 import java.util.Scanner;
-
+// eeeee
 public class MenuManager {
 
     private final PassManService service;
