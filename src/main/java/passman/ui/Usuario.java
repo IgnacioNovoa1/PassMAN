@@ -1,4 +1,4 @@
-package test;
+package passman.ui;
 
 import java.util.ArrayList;
 import java.util.HashMap;
