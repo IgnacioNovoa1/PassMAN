@@ -1,4 +1,4 @@
-package passman.ui;
+package passman.ui.Modelo;
 
 public class CifradoCesar {
     private static final String ESPECIALES = "!¡?¿@#$%^&.*()-,_=+\0";

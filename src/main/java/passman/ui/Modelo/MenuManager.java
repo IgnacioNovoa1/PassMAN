@@ -1,4 +1,4 @@
-package passman.ui;
+package passman.ui.Modelo;
 import java.util.Scanner;
 // eeeee
 public class MenuManager {

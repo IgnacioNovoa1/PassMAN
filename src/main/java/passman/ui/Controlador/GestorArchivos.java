@@ -1,4 +1,6 @@
-package passman.ui;
+package passman.ui.Controlador;
+
+import passman.ui.Modelo.Usuario;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;

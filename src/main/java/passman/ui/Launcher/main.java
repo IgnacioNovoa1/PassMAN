@@ -1,11 +1,15 @@
-package passman.ui;
+package passman.ui.Launcher;
+
+import passman.ui.Controlador.GestorArchivos;
+import passman.ui.Modelo.MenuManager;
+import passman.ui.Modelo.PassManService;
 
 public class main {
 
     // Dependencias
     private static final GestorArchivos GESTOR_ARCHIVOS = new GestorArchivos();
     private static final PassManService SERVICE = new PassManService(GESTOR_ARCHIVOS);
-    private static final MenuManager MENU_MANAGER = new MenuManager(SERVICE); 
+    private static final MenuManager MENU_MANAGER = new MenuManager(SERVICE);
 
     public static void main(String[] args) {
         // Lógica delegada al MenuManager
