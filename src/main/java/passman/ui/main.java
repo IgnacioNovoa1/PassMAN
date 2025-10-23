@@ -12,7 +12,7 @@ public class main {
 
     public static void main(String[] args) {
         // Lógica delegada al MenuManager
-        //String usuarioAutenticado = Menu.inicio();
+        //String usuarioAutenticado = Menu.inicio(); //Tampoco es necesario
 
         SwingUtilities.invokeLater(() -> new LoginVentana(Service));
         

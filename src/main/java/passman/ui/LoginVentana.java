@@ -97,12 +97,8 @@ public class LoginVentana extends JFrame implements ActionListener {
         if (e.getSource() == btnLogin) {
             autenticarUsuario();
         } else if (e.getSource() == btnRegistrar) {
-            // Lógica para abrir la ventana de registro
-            JOptionPane.showMessageDialog(this, 
-                "El registro por GUI aún no está implementado.\n" + 
-                "Por favor, use el MenuManager en consola para registrar un usuario.", 
-                "Función Pendiente", 
-                JOptionPane.INFORMATION_MESSAGE);
+            RegistroVentana registro = new RegistroVentana(service, this);
+            registro.setVisible(true);
         }
     }
     
