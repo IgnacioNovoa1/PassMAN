@@ -40,17 +40,20 @@ public class ServicioPassman {
             servicioPersistencia.guardarUsuario(nuevoUsuario);
             return true;
         } catch (Exception e) {
+            //Manejo de errores
             return false;
         }
     }
 
     public Usuario iniciarSesion(String nombreUsuario, String password) {
+        // Cargar el usuario
         Usuario user = servicioPersistencia.cargarUsuario(nombreUsuario);
 
         if (user == null) {
-            return null;
+            return null; //Usuario no existe
         }
 
+        //Verificar la contraseña
         try {
             boolean esValida = servicioHashing.verificarPassword(
                     password,

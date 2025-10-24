@@ -10,8 +10,6 @@ public class ServicioCifrado {
      * necesaria para el cifrado AES.
      */
     public String generarIV() {
-        // STUB: Genera un IV de 16 bytes simulado, codificado en Base64.
-        // Un UUID se usa como placeholder para generar una cadena única temporal.
         String iv = UUID.randomUUID().toString().replace("-", "").substring(0, 16);
         return Base64.getEncoder().encodeToString(iv.getBytes());
     }
@@ -21,7 +19,6 @@ public class ServicioCifrado {
      * Nota: Actualmente solo envuelve el texto con un prefijo para simular el cifrado.
      */
     public String cifrarDatos(String texto) {
-        // STUB: Simula el cifrado.
         return "CIFRADO_KMS(" + Base64.getEncoder().encodeToString(texto.getBytes()) + ")";
     }
 
@@ -30,7 +27,6 @@ public class ServicioCifrado {
      * Nota: Actualmente solo elimina el prefijo para simular el descifrado.
      */
     public String descifrarDatos(String textoCifrado) {
-        // STUB: Simula el descifrado.
         if (textoCifrado != null && textoCifrado.startsWith("CIFRADO_KMS(")) {
             try {
                 String base64Cifrada = textoCifrado.substring(12, textoCifrado.length() - 1);
