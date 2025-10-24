@@ -1,0 +1,20 @@
+{
+  "Luis": {
+    "rut": "601557893",
+    "cumpleanos": "4243",
+    "contrasena": "$2a$10$841OJkIaVpEBcMfqa3jchOALaJsog/mkfswjgkfWmbI8KQudFrk.S",
+    "bovedaDeContrasenas": []
+  },
+  "Luisardinho": {
+    "rut": "601557893",
+    "cumpleanos": "4243",
+    "contrasena": "$2a$10$c01eIZTnGAg6caT3Vq3UvuyQPKgUBtTIKh.jgE/8SCl/NXEtmesiW",
+    "bovedaDeContrasenas": []
+  },
+  "Pepito Pro": {
+    "rut": "667899870",
+    "cumpleanos": "5556",
+    "contrasena": "$2a$10$ovbEVJNuDH9L.auuzqaPO.392OODufsrGQSPnc8.y8E21iE0elebO",
+    "bovedaDeContrasenas": []
+  }
+}

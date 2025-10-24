@@ -121,17 +121,10 @@ public class LoginVentana extends JFrame implements ActionListener {
             Timer timer = new Timer(1000, new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    // *** AQUÍ SE DEBE CONTINUAR EL FLUJO DE LA APLICACIÓN ***
-                    // Cerrar la ventana de login
-                    dispose(); 
-                    // Abrir la ventana principal de PassMan (Aún no implementada)
-                    // System.out.println("DEBUG: Se abre el menú principal para el usuario: " + usuario);
-                    // new MainPassManVentana(usuario, service).setVisible(true);
+                    dispose(); // Cierra la ventana de Login
                     
-                    // Como el MenuManager solo tiene métodos de consola, lo llamamos de forma simulada
-                    System.out.println("\n*** LOGGING A CONSOLA ***");
-                    System.out.printf("Usuario '%s' autenticado. Se ejecuta el menú principal en consola.\n", usuario);
-                    new MenuManager(service).menuPrincipal(usuario);
+                    // LLama a la ventana principal
+                    new MenuVentana(usuario, service).setVisible(true);
                 }
             });
             timer.setRepeats(false); // Solo se ejecuta una vez
