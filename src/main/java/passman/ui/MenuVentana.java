@@ -66,6 +66,11 @@ public class MenuVentana extends JFrame implements ActionListener {
         return panel;
     }
 
+    public void cargarBovedaYMostrar() {
+        cargarBoveda();
+        tabbedPane.setSelectedIndex(0);
+    }
+
     // Carga y muestra las contraseñas en la bóveda
     private void cargarBoveda() {
         areaBoveda.setText(""); // Limpiar el área
@@ -135,10 +140,36 @@ public class MenuVentana extends JFrame implements ActionListener {
     
     // Opciones 
     private JPanel crearPanelOpciones() {
-        JPanel panel = new JPanel(new BorderLayout());
-        panel.add(new JLabel("Aquí irían las opciones de Editar Contraseñas y Evaluar Contraseña...", SwingConstants.CENTER), BorderLayout.CENTER);
-        return panel;
-    }
+        JPanel panel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(15, 15, 15, 15);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        
+        JButton btnEditar = new JButton("Editar Contraseña Guardada");
+        JButton btnEvaluar = new JButton("Evaluar Contraseña Maestra");
+        
+        // Listeners
+        btnEditar.addActionListener(e -> {
+            // Abre el diálogo de edición
+            new EditarContrasenaVentana(this, service, usuarioAutenticado).setVisible(true);
+        });
+        
+        btnEvaluar.addActionListener(e -> {
+            // Abre el diálogo de evaluación
+            new EvaluarContrasenaVentana(this, service, usuarioAutenticado).setVisible(true);
+        });
+
+        // Diseño
+        gbc.gridx = 0; gbc.gridy = 0;
+        panel.add(new JLabel("Funcionalidades Adicionales:"), gbc);
+        
+        gbc.gridx = 0; gbc.gridy = 1;
+        panel.add(btnEditar, gbc);
+        
+        gbc.gridx = 0; gbc.gridy = 2;
+        panel.add(btnEvaluar, gbc);
+
+        return panel;}
 
     // Manejo de eventos (botones)
     @Override

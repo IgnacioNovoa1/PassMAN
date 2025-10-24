@@ -18,13 +18,13 @@ public class PassManService {
     }
 
     public List<Map<String, String>> getContrasenasBoveda(String usuario) {
-    Map<String, passman.ui.Usuario> datos = gestorArchivos.cargarUsuarios();
-    passman.ui.Usuario user = datos.get(usuario);
+        Map<String, passman.ui.Usuario> datos = gestorArchivos.cargarUsuarios();
+        passman.ui.Usuario user = datos.get(usuario);
 
-    if (user != null) {
-        return user.getBovedaDeContrasenas();
-    }
-    return null; }
+        if (user != null) {
+            return user.getBovedaDeContrasenas();
+        }
+        return null; }
 
     // Registro e inicio de sesión
     public boolean registrarUsuario(String nombreUsuario, String rut, String cumpleanos, String contrasena) {
