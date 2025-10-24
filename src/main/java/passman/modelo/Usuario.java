@@ -42,13 +42,13 @@ public class Usuario {
     public String getSalt (){
         return salt;
     }
-    public int iteraciones() {
+    public int getIteraciones() {
         return iteraciones;
     }
     public String getNombreCifrado() {
         return nombreCifrado;
     }
-    public String getApellidoCifrad(){
+    public String getApellidoCifrado(){
         return apellidoCifrado;
     }
     public String getRutCifrado(){
@@ -57,7 +57,7 @@ public class Usuario {
     public String getFechaNacCifrada(){
         return fechaNacCifrada;
     }
-    public String gerIvPersonales(){
+    public String getIvPersonales(){
         return ivPersonales;
     }
     public void setPasswordHash(String passHash){
