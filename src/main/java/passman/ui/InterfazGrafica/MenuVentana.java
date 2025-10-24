@@ -1,6 +1,10 @@
-package passman.ui;
+package passman.ui.InterfazGrafica;
 
 import javax.swing.*;
+
+import passman.ui.CifradoCesar;
+import passman.ui.PassManService;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;

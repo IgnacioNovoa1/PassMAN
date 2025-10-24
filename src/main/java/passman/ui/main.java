@@ -2,6 +2,8 @@ package passman.ui;
 
 import javax.swing.SwingUtilities;
 
+import passman.ui.InterfazGrafica.LoginVentana;
+
 public class main {
 
     // Dependencias
