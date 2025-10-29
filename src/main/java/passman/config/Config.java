@@ -1,4 +1,4 @@
-package passman;
+package passman.config;
 
 public class Config {
 

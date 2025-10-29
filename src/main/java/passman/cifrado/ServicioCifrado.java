@@ -1,40 +1,40 @@
 package passman.cifrado;
-
+import java.nio.ByteBuffer;
 import java.util.Base64;
-import java.util.UUID;
 
-public class ServicioCifrado {
+import com.amazonaws.auth.AWSStaticCredentialsProvider;
+import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.client.builder.AwsClientBuilder;
+import com.amazonaws.services.kms.AWSKMS;
+import com.amazonaws.services.kms.AWSKMSClientBuilder;
+import com.amazonaws.services.kms.model.DecryptRequest;
+import com.amazonaws.services.kms.model.EncryptRequest;
 
-    /**
-     * Genera un Vector de Inicialización (IV) único, simulando la generación segura
-     * necesaria para el cifrado AES.
-     */
-    public String generarIV() {
-        String iv = UUID.randomUUID().toString().replace("-", "").substring(0, 16);
-        return Base64.getEncoder().encodeToString(iv.getBytes());
+import passman.config.Config;
+
+public class ServicioCifrado{
+    private final AWSKMS clienteKMS;
+    private final String keyArn;
+
+    public ServicioCifrado(){
+        BasicAWSCredentials credenciales = new BasicAWSCredentials("test", "test");
+
+        AwsClientBuilder.EndpointConfiguration configEndpoint = new AwsClientBuilder.EndpointConfiguration(Config.KMS_ENDPOINT, Config.KMS_REGION);
+        this.clienteKMS = AWSKMSClientBuilder.standard().withEndpointConfiguration(configEndpoint).withCredentials(new AWSStaticCredentialsProvider(credenciales)).build();
+        this.keyArn = Config.KMS_KEY_ARN;
+    }
+    public String cifrar(String texto){
+        ByteBuffer textoBuffer = ByteBuffer.wrap(texto.getBytes());
+        EncryptRequest req = new EncryptRequest().withKeyId(this.keyArn).withPlaintext(textoBuffer);
+        ByteBuffer textoCifradoBuffer = clienteKMS.encrypt(req).getCiphertextBlob();
+        return Base64.getEncoder().encodeToString(textoCifradoBuffer.array());
     }
 
-    /**
-     * Cifra un texto de forma simétrica (AES/KMS).
-     * Nota: Actualmente solo envuelve el texto con un prefijo para simular el cifrado.
-     */
-    public String cifrarDatos(String texto) {
-        return "CIFRADO_KMS(" + Base64.getEncoder().encodeToString(texto.getBytes()) + ")";
-    }
-
-    /**
-     * Descifra un texto cifrado.
-     * Nota: Actualmente solo elimina el prefijo para simular el descifrado.
-     */
-    public String descifrarDatos(String textoCifrado) {
-        if (textoCifrado != null && textoCifrado.startsWith("CIFRADO_KMS(")) {
-            try {
-                String base64Cifrada = textoCifrado.substring(12, textoCifrado.length() - 1);
-                return new String(Base64.getDecoder().decode(base64Cifrada));
-            } catch (IllegalArgumentException e) {
-                return "ERROR_DESCIFRADO_STUB";
-            }
-        }
-        return textoCifrado;
+    public String descifrar(String textoCifrado64){
+        byte[] cifradoBytes = Base64.getDecoder().decode(textoCifrado64);
+        ByteBuffer textoCifradoBuffer = ByteBuffer.wrap(cifradoBytes);
+        DecryptRequest req = new DecryptRequest().withCiphertextBlob(textoCifradoBuffer).withKeyId(this.keyArn);
+        ByteBuffer textoBuffer = clienteKMS.decrypt(req).getPlaintext();
+        return new String(textoBuffer.array());
     }
 }
