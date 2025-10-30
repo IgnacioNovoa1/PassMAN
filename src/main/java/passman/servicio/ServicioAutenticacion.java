@@ -28,22 +28,47 @@ public class ServicioAutenticacion {
         String salt = hashResult[1];
         int iteraciones = Integer.parseInt(hashResult[2]);
 
-        return servicioUsuarios.crearUsuario(nombreUsuario, salt, passwordHash, rut, fechaNac, iteraciones);
+        return servicioUsuarios.crearUsuario(nombreUsuario, rut, fechaNac, passwordHash, salt, iteraciones);
     }
 
     public boolean iniciarSesion(String nombreUsuario, String passwordPlana) {
-        try {
-            Usuario usuario = servicioUsuarios.obtenerUsuario(nombreUsuario);
-            if (usuario == null) return false;
+        Usuario usuario = servicioUsuarios.obtenerUsuario(nombreUsuario);
+        if (usuario == null) {
+            return false;
+        }
 
+        try {
             return hasher.verificarPassword(
                     passwordPlana,
                     usuario.getPasswordHash(),
                     usuario.getSalt(),
                     usuario.getIteraciones()
             );
-        } catch  (Exception e) {
-            throw new RuntimeException("Error en autenticación", e);
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public boolean cambiarPassword(String nombreUsuario, String nuevaPassword) {
+        Usuario usuario = servicioUsuarios.obtenerUsuario(nombreUsuario);
+        if (usuario == null) {
+            return false;
+        }
+
+        try {
+            String[] hashResult = hasher.hashPassword(nuevaPassword);
+            if (hashResult == null || hashResult.length != 3) {
+                return false;
+            }
+
+
+            usuario.setPasswordHash(hashResult[0]);
+            usuario.setSalt(hashResult[1]);
+            usuario.setIteraciones(Integer.parseInt(hashResult[2]));
+
+            return servicioUsuarios.actualizarUsuario(usuario);
+        } catch (Exception e) {
+            return false;
         }
     }
 }
