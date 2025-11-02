@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
  * - longitud mínima
  * - patrones: secuencias ascendentes/descendentes (abc, 123, cba, 321), repeticiones (aaaa, 1111)
  * - patrones aritméticos (pasos constantes p.ej. +2: 2,4,6,8)
- * - que no contenga datos personales (nombre, rut,  fecha nacimiento en formatos)
+ * - que no contenga datos personales (nombre, rut,   fecha nacimiento en formatos)
  * - integracion con HIBP por medio de HibpClient
  */
 public class PasswordEvaluator {
