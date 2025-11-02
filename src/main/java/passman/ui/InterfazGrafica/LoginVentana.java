@@ -1,9 +1,6 @@
 package passman.ui.InterfazGrafica;
 
 import javax.swing.*;
-
-import passman.ui.PassManService;
-
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -19,7 +16,7 @@ public class LoginVentana extends JFrame implements ActionListener {
     private JLabel etiquetaMensaje;
 
 
-    public LoginVentana(PassManService service) {
+    public LoginVentana() {
         // Configuración básica de la Ventana
         setTitle("PassMan - Inicio de Sesión");
         setSize(400, 250); 
