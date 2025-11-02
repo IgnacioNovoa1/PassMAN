@@ -18,12 +18,8 @@ public class LoginVentana extends JFrame implements ActionListener {
     private JButton btnRegistrar;
     private JLabel etiquetaMensaje;
 
-    // Dependencia del Servicio
-    private final PassManService service;
 
     public LoginVentana(PassManService service) {
-        this.service = service;
-        
         // Configuración básica de la Ventana
         setTitle("PassMan - Inicio de Sesión");
         setSize(400, 250); 
@@ -98,43 +94,9 @@ public class LoginVentana extends JFrame implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == btnLogin) {
-            autenticarUsuario();
+            mostrarMensaje("Autenticando...", Color.GRAY);
         } else if (e.getSource() == btnRegistrar) {
-            RegistroVentana registro = new RegistroVentana(service, this);
-            registro.setVisible(true);
-        }
-    }
-    
-    //Autenticación mediante PassManService
-    private void autenticarUsuario() {
-        String usuario = campoUsuario.getText().trim();
-        String password = new String(campoPassword.getPassword()).trim();
-
-        // Valida el formato de la contraseña
-        if (password.length() != 4 || !password.matches("\\d+")) {
-            mostrarMensaje("La contraseña debe ser de 4 dígitos.", Color.RED);
-            return;
-        }
-        
-        // Llama a la lógica de autenticación del servicio
-        if (service.iniciarSesion(usuario, password)) {
-            mostrarMensaje("¡Inicio de sesión exitoso! Abriendo PassMan...", Color.BLUE);
-            
-            // Pausa breve para que el usuario vea el mensaje
-            Timer timer = new Timer(1000, new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    dispose(); // Cierra la ventana de Login
-                    
-                    // LLama a la ventana principal
-                    new MenuVentana(usuario, service).setVisible(true);
-                }
-            });
-            timer.setRepeats(false); // Solo se ejecuta una vez
-            timer.start();
-            
-        } else {
-            mostrarMensaje("Error: Usuario o contraseña incorrectos.", Color.RED);
+            mostrarMensaje("Abriendo Registro...", Color.GRAY);
         }
     }
     

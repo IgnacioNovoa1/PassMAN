@@ -18,15 +18,9 @@ public class RegistroVentana extends JFrame implements ActionListener {
     private JButton btnRegistrar;
     private JLabel etiquetaMensaje;
 
-    // Dependencia del Servicio
-    private final PassManService service;
-    private final LoginVentana loginVentana; 
 
     // Constructor 
     public RegistroVentana(PassManService service, LoginVentana loginVentana) {
-        this.service = service;
-        this.loginVentana = loginVentana;
-        
         // Configuración de la Ventana
         setTitle("PassMan - Nuevo Registro");
         setSize(450, 350); 
@@ -104,58 +98,7 @@ public class RegistroVentana extends JFrame implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == btnRegistrar) {
-            registrarUsuario();
-        }
-    }
-    
-    // Recopilación de datos y llamado al servicio para registrar el usuario
-    private void registrarUsuario() {
-        String usuario = campoUsuario.getText().trim();
-        String rut = campoRut.getText().trim();
-        String cumpleanos = campoCumpleanos.getText().trim();
-        String password = new String(campoPassword.getPassword()).trim();
-
-        // Validaciones 
-        if (usuario.isEmpty() || rut.isEmpty() || cumpleanos.isEmpty() || password.isEmpty()) {
-            mostrarMensaje("Todos los campos son obligatorios.", Color.RED);
-            return;
-        }
-        
-        // Validación de RUT 
-        if (!rut.matches("\\d{8,9}")) {
-            mostrarMensaje("RUT inválido. Debe tener 8 o 9 dígitos (sin guión).", Color.RED);
-            return;
-        }
-
-        // Validación de Cumpleaños 
-        if (!cumpleanos.matches("\\d{4}")) {
-            mostrarMensaje("Cumpleaños inválido. Use el formato DDMM.", Color.RED);
-            return;
-        }
-        
-        // Validación de Contraseña Maestra 
-        if (!password.matches("\\d{4}")) {
-            mostrarMensaje("La Contraseña Maestra debe ser de 4 dígitos.", Color.RED);
-            return;
-        }
-        
-        // Llamar a la lógica de registro del servicio
-        boolean exito = service.registrarUsuario(usuario, rut, cumpleanos, password);
-
-        if (exito) {
-            mostrarMensaje("¡Registro exitoso! Ya puedes iniciar sesión.", Color.BLUE.darker());
-            
-            // Cerrar la ventana de registro y reabrir la de login
-            Timer timer = new Timer(1500, new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    dispose(); 
-                }
-            });
-            timer.setRepeats(false);
-            timer.start();
-        } else {
-            mostrarMensaje("Error: El nombre de usuario ya existe.", Color.RED);
+            mostrarMensaje("Intenando registrar...", Color.GRAY);
         }
     }
     

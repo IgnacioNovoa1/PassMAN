@@ -1,19 +1,12 @@
 package passman.ui.InterfazGrafica;
 
 import javax.swing.*;
-
-import passman.ui.CifradoCesar;
-import passman.ui.PassManService;
-
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.List;
-import java.util.Map;
+
 
 public class MenuVentana extends JFrame implements ActionListener {
-
-    private final PassManService service;
     private final String usuarioAutenticado;
 
     private JTabbedPane tabbedPane;
@@ -21,10 +14,10 @@ public class MenuVentana extends JFrame implements ActionListener {
     private JTextField campoServicio;
     private JPasswordField campoContrasenaNueva;
     private JButton btnGuardar;
+    private JButton btnActualizarBoveda;
 
-    public MenuVentana(String usuario, PassManService service) {
+    public MenuVentana(String usuario) {
         this.usuarioAutenticado = usuario;
-        this.service = service;
 
         // Configuración de la Ventana Principal
         setTitle("PassMan - Menú Principal | Usuario: " + usuario);
@@ -45,9 +38,6 @@ public class MenuVentana extends JFrame implements ActionListener {
 
         // Mostrar la ventana
         setVisible(true);
-        
-        // Cargar las contraseñas al iniciar
-        cargarBoveda();
     }
 
     // Boveda de contraseñas
@@ -61,49 +51,23 @@ public class MenuVentana extends JFrame implements ActionListener {
         
         JScrollPane scrollPane = new JScrollPane(areaBoveda);
         
-        JButton btnActualizar = new JButton("Actualizar Bóveda");
-        btnActualizar.addActionListener(e -> cargarBoveda());
+        btnActualizarBoveda = new JButton("Actualizar Bóveda");
+        btnActualizarBoveda.addActionListener(e -> {
+            areaBoveda.setText("Cargando...");
+        });
 
         panel.add(scrollPane, BorderLayout.CENTER);
-        panel.add(btnActualizar, BorderLayout.SOUTH);
+        panel.add(btnActualizarBoveda, BorderLayout.SOUTH);
 
         return panel;
     }
 
     public void cargarBovedaYMostrar() {
-        cargarBoveda();
         tabbedPane.setSelectedIndex(0);
     }
 
-    // Carga y muestra las contraseñas en la bóveda
-    private void cargarBoveda() {
-        areaBoveda.setText(""); // Limpiar el área
-        
-        // El servicio de archivos necesita ser ajustado para devolver la lista, no solo imprimir
-        List<Map<String, String>> boveda = service.getContrasenasBoveda(usuarioAutenticado);
-
-        if (boveda == null || boveda.isEmpty()) {
-            areaBoveda.setText("No hay contraseñas guardadas en tu bóveda.");
-            return;
-        }
-
-        StringBuilder sb = new StringBuilder();
-        sb.append("-----------------------------------------------------------------------\n");
-        sb.append(String.format("| %-4s | %-25s | %-30s |\n", "No.", "Servicio", "Contraseña Descifrada"));
-        sb.append("-----------------------------------------------------------------------\n");
-
-        for (int i = 0; i < boveda.size(); i++) {
-            Map<String, String> entrada = boveda.get(i);
-            String servicio = entrada.get("servicio");
-            String contrasenaCifrada = entrada.get("contraseña");
-
-            String contrasenaDescifrada = CifradoCesar.descifrar(contrasenaCifrada, 4); 
-
-            sb.append(String.format("| %-4d | %-25s | %-30s |\n", i + 1, servicio, contrasenaDescifrada));
-        }
-        sb.append("-----------------------------------------------------------------------\n");
-        
-        areaBoveda.setText(sb.toString());
+    public void mostrarBoveda(String datosFormateados){
+        areaBoveda.setText(datosFormateados);
     }
 
     // Guardar nueva contraseña
@@ -154,13 +118,11 @@ public class MenuVentana extends JFrame implements ActionListener {
         
         // Listeners
         btnEditar.addActionListener(e -> {
-            // Abre el diálogo de edición
-            new EditarContrasenaVentana(this, service, usuarioAutenticado).setVisible(true);
+            JOptionPane.showMessageDialog(this, "Funcionalidad de edición no implementada aún.", "En Desarrollo", JOptionPane.INFORMATION_MESSAGE);
         });
         
         btnEvaluar.addActionListener(e -> {
-            // Abre el diálogo de evaluación
-            new EvaluarContrasenaVentana(this, service, usuarioAutenticado).setVisible(true);
+            JOptionPane.showMessageDialog(this, "Funcionalidad de evaluación no implementada aún.", "En Desarrollo", JOptionPane.INFORMATION_MESSAGE);
         });
 
         // Diseño
@@ -180,23 +142,8 @@ public class MenuVentana extends JFrame implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == btnGuardar) {
             String servicio = campoServicio.getText().trim();
-            String contrasena = new String(campoContrasenaNueva.getPassword()).trim();
 
-            if (servicio.isEmpty() || contrasena.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Debe ingresar el servicio y la contraseña.", "Error de Entrada", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-
-            // Llama al servicio de guardado
-            service.guardarContrasena(usuarioAutenticado, servicio, contrasena);
-
-            JOptionPane.showMessageDialog(this, "¡Contraseña guardada exitosamente!", "Éxito", JOptionPane.INFORMATION_MESSAGE);
-            
-            // Limpiar campos y actualizar bóveda
-            campoServicio.setText("");
-            campoContrasenaNueva.setText("");
-            cargarBoveda(); // Recargar la lista de contraseñas
-            tabbedPane.setSelectedIndex(0); // Mover a la pestaña de la bóveda
+            JOptionPane.showMessageDialog(this, "Guardando contraseña para el servicio: " + servicio, "Guardando", JOptionPane.INFORMATION_MESSAGE);
         }
     }
 }

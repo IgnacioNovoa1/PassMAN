@@ -1,28 +1,19 @@
 package passman.ui.InterfazGrafica;
 
 import javax.swing.*;
-
-import passman.ui.PassManService;
-
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class EvaluarContrasenaVentana extends JDialog implements ActionListener {
-
-    private final PassManService service;
-    private final String usuarioAutenticado;
-
     private JPasswordField campoContrasena;
     private JButton btnEvaluar;
     private JLabel etiquetaMensaje;
     private JLabel etiquetaSugerencia;
 
     
-    public EvaluarContrasenaVentana(JFrame owner, PassManService service, String usuario) {
-        super(owner, "Evaluar Contraseña Maestra", true); 
-        this.service = service;
-        this.usuarioAutenticado = usuario;
+    public EvaluarContrasenaVentana(JFrame owner) {
+        super(owner, "Evaluar Contraseña Maestra", true);
 
         // Configuración de la Ventana
         setSize(450, 250);
@@ -73,36 +64,7 @@ public class EvaluarContrasenaVentana extends JDialog implements ActionListener 
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == btnEvaluar) {
-            evaluarContrasena();
-        }
-    }
-
-    private void evaluarContrasena() {
-        String contrasena = new String(campoContrasena.getPassword()).trim();
-        etiquetaSugerencia.setText(" "); 
-
-        // Validar el formato (debe ser 4 dígitos)
-        if (contrasena.length() != 4 || !contrasena.matches("\\d+")) {
-            JOptionPane.showMessageDialog(this, 
-                "El formato es inválido. Ingrese exactamente 4 dígitos.", 
-                "Error de Formato", 
-                JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        // Llamar al servicio de evaluación
-        if (service.esContrasenaDebil(contrasena, usuarioAutenticado)) {
-            etiquetaMensaje.setText("Resultado: Contraseña DÉBIL. ¡Cámbiala!");
-            etiquetaMensaje.setForeground(Color.RED.darker());
-
-            // Generar Sugerencia
-            String sugerencia = service.generarContrasenaFuerte(usuarioAutenticado);
-            etiquetaSugerencia.setText("Sugerencia segura: " + sugerencia);
-            etiquetaSugerencia.setForeground(Color.BLUE.darker());
-        } else {
-            etiquetaMensaje.setText("Resultado: Contraseña SEGURA.");
-            etiquetaMensaje.setForeground(Color.GREEN.darker());
-            etiquetaSugerencia.setText(" "); 
+            JOptionPane.showMessageDialog(this, "Evaluando contraseña...", "Info", JOptionPane.INFORMATION_MESSAGE);
         }
     }
 }

@@ -1,28 +1,17 @@
 package passman.ui.InterfazGrafica;
 
 import javax.swing.*;
-
-import passman.ui.PassManService;
-
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class EditarContrasenaVentana extends JDialog implements ActionListener {
-
-    private final PassManService service;
-    private final String usuarioAutenticado;
-    private final MenuVentana menuVentana; 
-
     private JTextField campoIndice;
     private JPasswordField campoNuevaContrasena;
     private JButton btnEditar;
 
-    public EditarContrasenaVentana(MenuVentana owner, PassManService service, String usuario) {
-        super(owner, "Editar Contraseña Guardada", true); 
-        this.service = service;
-        this.usuarioAutenticado = usuario;
-        this.menuVentana = owner;
+    public EditarContrasenaVentana(MenuVentana owner) {
+        super(owner, "Editar Contraseña Guardada", true);
 
         // Configuración
         setSize(450, 200);
@@ -74,44 +63,7 @@ public class EditarContrasenaVentana extends JDialog implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == btnEditar) {
-            editarContrasena();
-        }
-    }
-
-    private void editarContrasena() {
-        try {
-            // El usuario ve la lista y selecciona el No.
-            int indiceSeleccionado = Integer.parseInt(campoIndice.getText().trim());
-            int indiceReal = indiceSeleccionado - 1; 
-            
-            String nuevaContrasena = new String(campoNuevaContrasena.getPassword()).trim();
-
-            if (nuevaContrasena.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "La nueva contraseña no puede estar vacía.", "Error", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-
-            // Llamar al servicio de edición
-            if (service.editarContrasena(usuarioAutenticado, indiceReal, nuevaContrasena)) {
-                JOptionPane.showMessageDialog(this, 
-                    "Contraseña #" + indiceSeleccionado + " actualizada con éxito.", 
-                    "Éxito", 
-                    JOptionPane.INFORMATION_MESSAGE);
-                
-                // Actualizar la vista de la bóveda en la ventana principal
-                menuVentana.cargarBovedaYMostrar(); 
-                dispose(); 
-            } else {
-                JOptionPane.showMessageDialog(this, 
-                    "Error: El número (índice) no es válido.", 
-                    "Error", 
-                    JOptionPane.ERROR_MESSAGE);
-            }
-        } catch (NumberFormatException ex) {
-            JOptionPane.showMessageDialog(this, 
-                "Por favor, ingrese un número válido para el índice.", 
-                "Error", 
-                JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Editando...", "info", JOptionPane.INFORMATION_MESSAGE);
         }
     }
 }
