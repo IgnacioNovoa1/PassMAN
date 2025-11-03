@@ -1,4 +1,4 @@
-package passman.seguridad;
+package passman.nucleo.seguridad;
 
 import java.util.ArrayList;
 import java.util.List;

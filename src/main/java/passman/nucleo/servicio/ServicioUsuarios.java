@@ -1,4 +1,4 @@
-package passman.servicio;
+package passman.nucleo.servicio;
 
 import passman.modelo.Usuario;
 import passman.cifrado.ServicioCifrado;

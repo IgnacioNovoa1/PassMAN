@@ -1,4 +1,4 @@
-package passman.servicio;
+package passman.nucleo.servicio;
 
 import passman.cifrado.ServicioCifrado;
 import passman.cifrado.ServicioHashing;

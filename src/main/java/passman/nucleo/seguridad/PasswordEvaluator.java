@@ -1,4 +1,4 @@
-package passman.seguridad;
+package passman.nucleo.seguridad;
 
 import passman.modelo.Usuario;
 

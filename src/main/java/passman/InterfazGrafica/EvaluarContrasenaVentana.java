@@ -1,7 +1,7 @@
-package passman.ui.InterfazGrafica;
+package passman.InterfazGrafica;
 
-import passman.controlador.ControladorPrincipal;
-import passman.servicio.ServicioPassman;
+import passman.nucleo.servicio.ControladorPrincipal;
+import passman.nucleo.servicio.ServicioPassman;
 
 import javax.swing.*;
 import java.awt.*;

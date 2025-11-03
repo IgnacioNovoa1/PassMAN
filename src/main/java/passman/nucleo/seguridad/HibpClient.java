@@ -1,4 +1,4 @@
-package passman.seguridad;
+package passman.nucleo.seguridad;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
