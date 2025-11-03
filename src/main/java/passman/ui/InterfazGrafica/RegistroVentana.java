@@ -1,5 +1,6 @@
 package passman.ui.InterfazGrafica;
 
+import passman.controlador.ControladorPrincipal;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -7,6 +8,7 @@ import java.awt.event.ActionListener;
 
 public class RegistroVentana extends JFrame implements ActionListener {
 
+    private final ControladorPrincipal controlador;
     // Componentes
     private JTextField campoUsuario;
     private JTextField campoRut;
@@ -17,7 +19,8 @@ public class RegistroVentana extends JFrame implements ActionListener {
 
 
     // Constructor 
-    public RegistroVentana(LoginVentana loginVentana) {
+    public RegistroVentana(LoginVentana loginVentana, ControladorPrincipal controlador) {
+        this.controlador = controlador;
         // Configuración de la Ventana
         setTitle("PassMan - Nuevo Registro");
         setSize(450, 350); 
@@ -95,7 +98,22 @@ public class RegistroVentana extends JFrame implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == btnRegistrar) {
-            mostrarMensaje("Intenando registrar...", Color.GRAY);
+            String usuario = campoUsuario.getText().trim();
+            String rut = campoRut.getText().trim();
+            String cumpleanos = campoCumpleanos.getText().trim();
+            String password = new String(campoPassword.getPassword()).trim();
+
+            if (usuario.isEmpty() || rut.isEmpty() || cumpleanos.isEmpty() || password.isEmpty()) {
+                mostrarMensaje("Todos los campos son obligatorios.", Color.RED);
+                return;
+            }
+
+            if (controlador.registrarUsuario(usuario, rut, cumpleanos, password)) {
+                mostrarMensaje("¡Registro exitoso! Ya puedes iniciar sesión.", Color.BLUE);
+                dispose();
+            } else {
+                mostrarMensaje("Error: El nombre de usuario ya existe.", Color.RED);
+            }
         }
     }
     
