@@ -1,7 +1,7 @@
-package passman.controlador;
+package passman.lanzador;
 
-import passman.servicio.ServicioPassman;
-import passman.ui.InterfazGrafica.*;
+import passman.nucleo.servicio.ServicioPassman;
+import passman.InterfazGrafica.*;
 
 import javax.swing.*;
 import java.util.List;
