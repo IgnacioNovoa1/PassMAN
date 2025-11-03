@@ -2,26 +2,38 @@ package passman.nucleo.servicio;
 
 import passman.cifrado.ServicioCifrado;
 import passman.cifrado.ServicioHashing;
+import passman.modelo.Usuario;
+import passman.nucleo.seguridad.HibpClient;
+import passman.nucleo.seguridad.PasswordEvaluator;
+import passman.nucleo.seguridad.PasswordCheckResult;
+import passman.nucleo.seguridad.PasswordStrength;
 import passman.persistencia.ServicioPersistencia;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 public class ServicioPassman {
     private final ServicioAutenticacion servicioAuth;
     private final ServicioCredenciales servicioCred;
+    private final ServicioUsuarios servicioUsers;
+    private final PasswordEvaluator passwordEvaluator;
 
     public ServicioPassman() {
         ServicioPersistencia persistencia = new ServicioPersistencia();
         ServicioCifrado cifrador = new ServicioCifrado();
         ServicioHashing hasher = new ServicioHashing();
-        ServicioUsuarios servicioUsers = new ServicioUsuarios(persistencia, cifrador);
+        
+        this.servicioUsers = new ServicioUsuarios(persistencia, cifrador);
 
         this.servicioAuth = new ServicioAutenticacion(servicioUsers, hasher);
         this.servicioCred = new ServicioCredenciales(persistencia, cifrador, servicioUsers);
+        
+
+        HibpClient hibpClient = new HibpClient();
+        this.passwordEvaluator = new PasswordEvaluator(hibpClient);
     }
 
-    // AUTENTICACION
     public boolean registrarUsuario(String usuario, String rut, String cumpleanos, String password) {
         if (!validarDatosRegistro(usuario,rut,cumpleanos,password)) {
             return false;
@@ -36,11 +48,7 @@ public class ServicioPassman {
         return servicioAuth.iniciarSesion(usuario, password);
     }
 
-    // GESTION CREDENCIALES
     public boolean guardarContrasena(String usuario, String servicio, String contrasena) {
-        if (!validarCredencial(servicio, contrasena)) {
-            return false;
-        }
         return servicioCred.guardarCredencial(usuario, servicio, usuario, contrasena);
     }
 
@@ -65,21 +73,60 @@ public class ServicioPassman {
         return servicioCred.eliminarCredencial(usuario, indice);
     }
 
-    // EVALUACION CONTRASEÑAS
-    public boolean esContrasenaDebil(String contrasena, String usuario) {
+    public String evaluarContrasena(String contrasena, String nombreUsuario) {
         if (contrasena == null || contrasena.trim().isEmpty()) {
-            return true;
+            return "DÉBIL|La contraseña no puede estar vacía.";
         }
-        return servicioCred.verificarReutilizacion(usuario, contrasena) ||
-                !esContrasenaFuerte(contrasena);
+
+        Usuario usuarioObj = servicioUsers.obtenerUsuario(nombreUsuario);
+        PasswordCheckResult resultado = passwordEvaluator.evaluate(contrasena, usuarioObj);
+
+        PasswordStrength strength = resultado.getStrength();
+        
+        if (strength == PasswordStrength.FILTRADA) {
+            String sugerencia = generarContrasenaSegura(); 
+            return String.format("DÉBIL|FILTRADA: %s. Sugerencia: %s", resultado.getMessages().get(0), sugerencia);
+        }
+        
+        if (strength == PasswordStrength.DEBIL) {
+            String sugerencia = generarContrasenaSegura();
+            return String.format("DÉBIL|%s Sugerencia: %s", String.join(" ", resultado.getMessages()), sugerencia);
+        }
+        
+        if (strength == PasswordStrength.SEMIFUERTE) {
+            return String.format("FUERTE|%s", String.join(" ", resultado.getMessages()));
+        }
+        return "FUERTE|¡Contraseña segura!";
     }
+    private String generarContrasenaSegura() {
+        String mayusculas = "ABDEFGHIJKLMNOPQRSTUVWXYZ";
+        String minusculas = "abcdefghijklmnopqrstuvwxyz";
+        String numeros = "0123456789";
+        String simbolos = "!@#$%^&*()_+-=[]{}|;:,.<>?";
 
-    public String generarContrasenaFuerte(String usuario) {
-        return servicioCred.generarContrasenaSegura();
+        Random random = new Random();
+        StringBuilder password  = new StringBuilder();
+
+        password.append(mayusculas.charAt(random.nextInt(mayusculas.length())));
+        password.append(minusculas.charAt(random.nextInt(minusculas.length())));
+        password.append(numeros.charAt(random.nextInt(numeros.length())));
+        password.append(simbolos.charAt(random.nextInt(simbolos.length())));
+
+        String todosCaracteres = mayusculas + minusculas + numeros + simbolos;
+        for (int i = 4; i < 12; i++) {
+            password.append(todosCaracteres.charAt(random.nextInt(todosCaracteres.length())));
+        }
+        
+        char[] arrayPassword = password.toString().toCharArray();
+        for (int i = arrayPassword.length - 1; i > 0; i--) {
+            int j = random.nextInt(i + 1);
+            char temp = arrayPassword[i];
+            arrayPassword[i] = arrayPassword[j];
+            arrayPassword[j] = temp;
+        }
+        return new String(arrayPassword);
     }
-
-    // VALIDACIONES
-
+    
     private boolean validarDatosRegistro(String usuario, String rut, String cumpleanos, String password) {
         return usuario != null && !usuario.trim().isEmpty() &&
                 rut != null && rut.matches("\\d{8,9}") &&
@@ -90,21 +137,5 @@ public class ServicioPassman {
     private boolean validarDatosLogin(String usuario, String password) {
         return usuario != null && !usuario.trim().isEmpty() &&
                 password != null && !password.trim().isEmpty();
-    }
-
-    private boolean validarCredencial(String servicio, String password) {
-        return servicio != null && !servicio.trim().isEmpty() &&
-                password != null && !password.trim().isEmpty();
-    }
-
-    private boolean esContrasenaFuerte(String contrasena) {
-        if (contrasena == null || contrasena.length() < 8) return false;
-
-        boolean tieneMayuscula = contrasena.matches(".*[A-Z].*");
-        boolean tieneMinuscula = contrasena.matches(".*[a-z].*");
-        boolean tieneNumero = contrasena.matches(".*[0-9].*");
-        boolean tieneSimbolo = contrasena.matches(".*[!@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>?].*");
-
-        return tieneMayuscula && tieneMinuscula && tieneNumero && tieneSimbolo;
     }
 }

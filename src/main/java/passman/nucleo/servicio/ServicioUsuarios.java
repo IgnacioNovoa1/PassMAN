@@ -47,7 +47,7 @@ public class ServicioUsuarios {
     }
 
     public boolean actualizarUsuario(Usuario usuario) {
-        return usuario != null;
+        return persistencia.actualizarUsuario(usuario);
     }
 
     public String obtenerRutDescifrado(String nombreUsuario) {

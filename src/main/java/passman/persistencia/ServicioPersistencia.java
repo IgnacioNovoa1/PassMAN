@@ -29,6 +29,11 @@ public class ServicioPersistencia {
                         rs.getString("salt"),
                         rs.getInt("iteraciones")
                     );
+                    usuario.setNombreCifrado(rs.getString("nombre_cifrado"));
+                    usuario.setApellidoCifrado(rs.getString("apellido_cifrado"));
+                    usuario.setRutCifrado(rs.getString("rut_cifrado"));
+                    usuario.setFechaNacCifrado(rs.getString("fecha_nac_cifrada"));
+                    usuario.setIvPersonales(rs.getString("iv_personales"));
                     return Optional.of(usuario);
                 }
             }
@@ -75,7 +80,31 @@ public class ServicioPersistencia {
             return false;
         }
     }
+    public boolean actualizarUsuario(Usuario usuario) {
+        String sql = "UPDATE \"Usuarios\" SET " +
+                    "password_hash = ?, salt = ?, iteraciones = ?, " +
+                    "nombre_cifrado = ?, apellido_cifrado = ?, rut_cifrado = ?, " +
+                    "fecha_nac_cifrada = ?, iv_personales = ? " +
+                    "WHERE id_usuario = ?";
+        
+        try (Connection conn = conectar(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            
+            pstmt.setString(1, usuario.getPasswordHash());
+            pstmt.setString(2, usuario.getSalt());
+            pstmt.setInt(3, usuario.getIteraciones());
+            pstmt.setString(4, usuario.getNombreCifrado());
+            pstmt.setString(5, usuario.getApellidoCifrado());
+            pstmt.setString(6, usuario.getRutCifrado());
+            pstmt.setString(7, usuario.getFechaNacCifrada());
+            pstmt.setString(8, usuario.getIvPersonales());
+            pstmt.setObject(9, usuario.getIdUsuario()); 
 
+            return pstmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
     public List<EntradaCredencial> cargarCredenciales(UUID idUsuario) {
         List<EntradaCredencial> lista = new ArrayList<>();
         String sql = "SELECT * FROM \"Credenciales\" WHERE id_usuario = ?";

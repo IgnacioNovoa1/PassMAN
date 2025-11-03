@@ -49,12 +49,7 @@ public class ControladorPrincipal {
     }
 
     public String evaluarContrasena(String contrasena, String usuario) {
-        boolean esDebil = servicioPassman.esContrasenaDebil(contrasena, usuario);
-        if (esDebil) {
-            return "DÉBIL|" + servicioPassman.generarContrasenaFuerte(usuario);
-        } else {
-            return "FUERTE|";
-        }
+        return servicioPassman.evaluarContrasena(contrasena, usuario);
     }
 
     // Navegación.

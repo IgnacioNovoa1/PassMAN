@@ -33,8 +33,8 @@ public class ServicioHashing {
         return new String[]{hashBase64, saltBase64, String.valueOf(ITERACIONES)};
     }
     public boolean verificarPassword(String pass, String hashAlmacenado64, String saltAlmacenado64, int iterac) throws Exception {
-        byte[] salt = Base64.getDecoder().decode(hashAlmacenado64);
-        byte[] hash = Base64.getDecoder().decode(saltAlmacenado64);
+        byte[] salt = Base64.getDecoder().decode(saltAlmacenado64);
+        byte[] hash = Base64.getDecoder().decode(hashAlmacenado64);
         byte[] hashInterno = hash(pass.toCharArray(), salt, iterac);
         return Arrays.equals(hash, hashInterno);
     }

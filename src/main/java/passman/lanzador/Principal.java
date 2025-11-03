@@ -1,11 +1,12 @@
 package passman.lanzador;
 
-import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 
 public class Principal {
     
     public static void main(String[] args) {
-        // Main SOLO inicia.
-        Aplicacion.iniciar();
+        SwingUtilities.invokeLater(() -> {
+            new ControladorPrincipal();
+        });
     }
 }

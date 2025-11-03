@@ -49,8 +49,14 @@ public class ServicioCredenciales {
             entrada.put("servicio", cred.getServicio());
             entrada.put("usuario", cred.getUsuarioServicio());
 
-            String passwordDescifrada = cifrador.descifrar(cred.getPasswordCifrada());
-            entrada.put("contraseña", passwordDescifrada != null ? passwordDescifrada : "ERROR");
+            String passwordDescifrada = null;
+            try {
+                passwordDescifrada = cifrador.descifrar(cred.getPasswordCifrada());
+            } catch (Exception e) {
+                // Si falla el descifrado (ej. clave KMS incorrecta), no detengas todo
+                e.printStackTrace();
+            }
+            entrada.put("contraseña", passwordDescifrada != null ? passwordDescifrada : "ERROR AL DESCIFRAR");
 
             resultado.add(entrada);
         }
@@ -102,12 +108,18 @@ public class ServicioCredenciales {
         List<EntradaCredencial> credenciales = persistencia.cargarCredenciales(usuarioId);
 
         for (EntradaCredencial cred : credenciales) {
-            String passwordAlmacenada = cifrador.descifrar(cred.getPasswordCifrada());
-            if (passwordAlmacenada == null && passwordAlmacenada.equals(nuevaPssword)) {
-                return true;
+            String passwordAlmacenada = null;
+            try {
+                passwordAlmacenada = cifrador.descifrar(cred.getPasswordCifrada());
+            } catch (Exception e) {
+                // Ignora las contraseñas que no se pueden descifrar
+                continue; 
+            }
+            if (passwordAlmacenada != null && passwordAlmacenada.equals(nuevaPssword)) {
+                return true; // ¡Encontrada! Es una contraseña reutilizada.
             }
         }
-        return false;
+        return false; // No se encontró, es segura.
     }
 
     public String generarContrasenaSegura() {

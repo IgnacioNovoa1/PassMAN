@@ -72,6 +72,9 @@ public class Usuario {
     public void setNombreCifrado(String nom){
         this.nombreCifrado = nom;
     }
+    public void setApellidoCifrado(String apell){
+        this.apellidoCifrado = apell;
+    }
     public void setRutCifrado(String rutCifrado){
         this.rutCifrado = rutCifrado;
     }

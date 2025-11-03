@@ -1,7 +1,6 @@
 package passman.InterfazGrafica;
 
-import passman.nucleo.servicio.ControladorPrincipal;
-import passman.nucleo.servicio.ServicioPassman;
+import passman.lanzador.ControladorPrincipal;
 
 import javax.swing.*;
 import java.awt.*;
@@ -19,49 +18,41 @@ public class EvaluarContrasenaVentana extends JDialog implements ActionListener 
 
     
     public EvaluarContrasenaVentana(MenuVentana owner, ControladorPrincipal controlador) {
-        super(owner, "Evaluar Contraseña Maestra", true);
+        super(owner, "Evaluar Contraseña", true); // Modal
         this.controlador = controlador;
         this.usuarioAutenticado = owner.getUsuarioAutenticado();
 
-        // Configuración de la Ventana
         setSize(450, 250);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setLocationRelativeTo(owner);
 
-        // Panel Principal con GridBagLayout para buen control
         JPanel panel = new JPanel(new GridBagLayout());
         panel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(5, 5, 5, 5);
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
-        // Inicialización de Componentes
         campoContrasena = new JPasswordField(15);
         btnEvaluar = new JButton("Evaluar");
-        etiquetaMensaje = new JLabel("Ingrese una contraseña de 4 dígitos a evaluar:");
+        etiquetaMensaje = new JLabel("Ingrese una contraseña a evaluar:");
         etiquetaMensaje.setHorizontalAlignment(SwingConstants.CENTER);
         etiquetaSugerencia = new JLabel(" "); 
         
         btnEvaluar.addActionListener(this);
 
-        // Diseño 
         int row = 0;
         
-        // Etiqueta de instrucción
         gbc.gridx = 0; gbc.gridy = row++; gbc.gridwidth = 2;
         panel.add(etiquetaMensaje, gbc);
 
-        // Campo de Contraseña
         gbc.gridx = 0; gbc.gridy = row++; gbc.gridwidth = 1;
-        panel.add(new JLabel("Contraseña (4 dígitos):"), gbc);
+        panel.add(new JLabel("Contraseña:"), gbc);
         gbc.gridx = 1; gbc.gridy = row - 1;
         panel.add(campoContrasena, gbc);
 
-        // Botón Evaluar
         gbc.gridx = 0; gbc.gridy = row++; gbc.gridwidth = 2;
         panel.add(btnEvaluar, gbc);
         
-        // Mensaje de Resultado
         gbc.gridx = 0; gbc.gridy = row++;
         etiquetaSugerencia.setFont(new Font("Arial", Font.BOLD, 12));
         panel.add(etiquetaSugerencia, gbc);
@@ -85,18 +76,43 @@ public class EvaluarContrasenaVentana extends JDialog implements ActionListener 
             return;
         }
 
-        String resultado = controlador.evaluarContrasena(contrasena, usuarioAutenticado);
-        String[] partes = resultado.split("\\|");
+        btnEvaluar.setEnabled(false);
+        setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 
-        if (partes[0].equals("DÉBIL")) {
-            etiquetaMensaje.setText("Resultado: Contraseña DÉBIL. ¡Cámbiala!");
-            etiquetaMensaje.setForeground(Color.RED);
-            etiquetaSugerencia.setText("Sugerencia segura: " + partes[1]);
-            etiquetaSugerencia.setForeground(Color.BLUE);
-        } else {
-            etiquetaMensaje.setText("Resultado: Contraseña FUERTE.");
-            etiquetaMensaje.setForeground(Color.GREEN);
-            etiquetaSugerencia.setText(" ");
-        }
+        new SwingWorker<String, Void>() {
+            @Override
+            protected String doInBackground() throws Exception {
+                // Esta es la llamada de red/cómputo (lenta)
+                return controlador.evaluarContrasena(contrasena, usuarioAutenticado);
+            }
+            
+            @Override
+            protected void done() {
+                try {
+                    String resultado = get();
+                    String[] partes = resultado.split("\\|");
+
+                    if (partes[0].equals("DÉBIL")) {
+                        etiquetaMensaje.setText("<html>Resultado: Contraseña DÉBIL.</html>");
+                        etiquetaMensaje.setForeground(Color.RED);
+                        // Muestra el mensaje (que ahora puede ser la sugerencia o la razón)
+                        etiquetaSugerencia.setText("<html>" + partes[1] + "</html>"); 
+                        etiquetaSugerencia.setForeground(Color.BLUE.darker());
+                    } else { // FUERTE
+                        etiquetaMensaje.setText("<html>Resultado: Contraseña FUERTE.</html>");
+                        etiquetaMensaje.setForeground(new Color(0, 100, 0)); // Verde oscuro
+                        etiquetaSugerencia.setText("<html>" + partes[1] + "</html>");
+                        etiquetaSugerencia.setForeground(new Color(0, 100, 0));
+                    }
+                } catch (Exception ex) {
+                    etiquetaMensaje.setText("Error de conexión con la API HIBP.");
+                    etiquetaMensaje.setForeground(Color.RED);
+                    etiquetaSugerencia.setText(" ");
+                } finally {
+                    btnEvaluar.setEnabled(true);
+                    setCursor(Cursor.getDefaultCursor());
+                }
+            }
+        }.execute();
     }
 }
