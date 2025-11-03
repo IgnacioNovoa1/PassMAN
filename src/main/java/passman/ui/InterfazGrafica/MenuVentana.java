@@ -1,5 +1,7 @@
 package passman.ui.InterfazGrafica;
 
+import passman.controlador.ControladorPrincipal;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -7,6 +9,7 @@ import java.awt.event.ActionListener;
 
 
 public class MenuVentana extends JFrame implements ActionListener {
+    private final ControladorPrincipal controlador;
     private final String usuarioAutenticado;
 
     private JTabbedPane tabbedPane;
@@ -16,7 +19,8 @@ public class MenuVentana extends JFrame implements ActionListener {
     private JButton btnGuardar;
     private JButton btnActualizarBoveda;
 
-    public MenuVentana(String usuario) {
+    public MenuVentana(String usuario, ControladorPrincipal controlador) {
+        this.controlador = controlador;
         this.usuarioAutenticado = usuario;
 
         // Configuración de la Ventana Principal
@@ -62,12 +66,22 @@ public class MenuVentana extends JFrame implements ActionListener {
         return panel;
     }
 
+    private void cargarBoveda() {
+        String bovedaFormateada = controlador.obtenerBovedaFormateada(usuarioAutenticado);
+        mostrarBoveda(bovedaFormateada);
+    }
+
     public void cargarBovedaYMostrar() {
+        cargarBoveda();
         tabbedPane.setSelectedIndex(0);
     }
 
     public void mostrarBoveda(String datosFormateados){
         areaBoveda.setText(datosFormateados);
+    }
+
+    public String getUsuarioAutenticado() {
+        return usuarioAutenticado;
     }
 
     // Guardar nueva contraseña
@@ -142,8 +156,25 @@ public class MenuVentana extends JFrame implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == btnGuardar) {
             String servicio = campoServicio.getText().trim();
+            String contrasena = new String(campoContrasenaNueva.getPassword()).trim();
 
-            JOptionPane.showMessageDialog(this, "Guardando contraseña para el servicio: " + servicio, "Guardando", JOptionPane.INFORMATION_MESSAGE);
+            if (servicio.isEmpty() || contrasena.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Debe ingresar el servicio y la contraseña.",
+                        "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            if (controlador.guardarContrasena(usuarioAutenticado, servicio, contrasena)) {
+                JOptionPane.showMessageDialog(this, "¡Contraseña guardada exitosamente!",
+                        "Éxito", JOptionPane.INFORMATION_MESSAGE);
+                campoServicio.setText("");
+                campoContrasenaNueva.setText("");
+                cargarBoveda();
+                tabbedPane.setSelectedIndex(0);
+            } else {
+                JOptionPane.showMessageDialog(this, "Error al guardar la contraseña.",
+                        "Error", JOptionPane.ERROR_MESSAGE);
+            }
         }
     }
 }

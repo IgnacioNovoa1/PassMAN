@@ -1,5 +1,6 @@
 package passman.ui.InterfazGrafica;
 
+import passman.controlador.ControladorPrincipal;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -8,6 +9,7 @@ import java.awt.event.ActionListener;
 // Extendemos JFrame para crear la ventana e implementamos ActionListener para manejar el botón
 public class LoginVentana extends JFrame implements ActionListener {
 
+    private final ControladorPrincipal controlador;
     // Componentes de la Interfaz
     private JTextField campoUsuario;
     private JPasswordField campoPassword;
@@ -16,7 +18,8 @@ public class LoginVentana extends JFrame implements ActionListener {
     private JLabel etiquetaMensaje;
 
 
-    public LoginVentana() {
+    public LoginVentana(ControladorPrincipal controlador) {
+        this.controlador = controlador;
         // Configuración básica de la Ventana
         setTitle("PassMan - Inicio de Sesión");
         setSize(400, 250); 
@@ -91,9 +94,22 @@ public class LoginVentana extends JFrame implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == btnLogin) {
-            mostrarMensaje("Autenticando...", Color.GRAY);
+            String usuario = campoUsuario.getText().trim();
+            String password = new String(campoPassword.getPassword()).trim();
+
+            if (usuario.isEmpty() || password.isEmpty()) {
+                mostrarMensaje("Debe ingresar usuario y contraseña.", Color.RED);
+                return;
+            }
+
+            if (controlador.autenticarUsuario(usuario, password)) {
+                mostrarMensaje("¡Inicio de sesión exitoso!", Color.BLUE);
+                controlador.abrirMenuPrincipal(usuario);
+            } else {
+                mostrarMensaje("Error: Usuario o contraseña incorrectos.", Color.RED);
+            }
         } else if (e.getSource() == btnRegistrar) {
-            mostrarMensaje("Abriendo Registro...", Color.GRAY);
+            controlador.abrirRegistro(this);
         }
     }
     

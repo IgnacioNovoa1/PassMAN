@@ -1,17 +1,23 @@
 package passman.ui.InterfazGrafica;
 
+import passman.controlador.ControladorPrincipal;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class EditarContrasenaVentana extends JDialog implements ActionListener {
+    private final ControladorPrincipal controlador;
+    private final String usuarioAutenticado;
     private JTextField campoIndice;
     private JPasswordField campoNuevaContrasena;
     private JButton btnEditar;
 
-    public EditarContrasenaVentana(MenuVentana owner) {
+    public EditarContrasenaVentana(MenuVentana owner, ControladorPrincipal controlador) {
         super(owner, "Editar Contraseña Guardada", true);
+        this.controlador = controlador;
+        this.usuarioAutenticado = owner.getUsuarioAutenticado();
 
         // Configuración
         setSize(450, 200);
@@ -63,7 +69,37 @@ public class EditarContrasenaVentana extends JDialog implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == btnEditar) {
-            JOptionPane.showMessageDialog(this, "Editando...", "info", JOptionPane.INFORMATION_MESSAGE);
+            editarContrasena();
         }
     }
+
+    private void editarContrasena() {
+        try {
+            int indiceSeleccionado = Integer.parseInt(campoIndice.getText().trim());
+            int indiceReal = indiceSeleccionado - 1;
+            String nuevaContrasena = new String(campoNuevaContrasena.getPassword()).trim();
+
+            if (nuevaContrasena.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "La nueva contraseña no puede estar vacía.",
+                        "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            if (controlador.editarContrasena(usuarioAutenticado, indiceReal, nuevaContrasena)) {
+                JOptionPane.showMessageDialog(this,
+                        "Contraseña #" + indiceSeleccionado + " actualizada con éxito.",
+                        "Éxito", JOptionPane.INFORMATION_MESSAGE);
+                dispose();
+            } else {
+                JOptionPane.showMessageDialog(this,
+                        "Error: El número (índice) no es válido.",
+                        "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(this,
+                    "Por favor, ingrese un número válido para el índice.",
+                    "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
 }

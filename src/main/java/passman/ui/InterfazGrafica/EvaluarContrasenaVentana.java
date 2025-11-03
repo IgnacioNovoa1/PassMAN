@@ -1,19 +1,27 @@
 package passman.ui.InterfazGrafica;
 
+import passman.controlador.ControladorPrincipal;
+import passman.servicio.ServicioPassman;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class EvaluarContrasenaVentana extends JDialog implements ActionListener {
+    private final ControladorPrincipal controlador;
+    private final String usuarioAutenticado;
+
     private JPasswordField campoContrasena;
     private JButton btnEvaluar;
     private JLabel etiquetaMensaje;
     private JLabel etiquetaSugerencia;
 
     
-    public EvaluarContrasenaVentana(JFrame owner) {
+    public EvaluarContrasenaVentana(MenuVentana owner, ControladorPrincipal controlador) {
         super(owner, "Evaluar Contraseña Maestra", true);
+        this.controlador = controlador;
+        this.usuarioAutenticado = owner.getUsuarioAutenticado();
 
         // Configuración de la Ventana
         setSize(450, 250);
@@ -64,7 +72,31 @@ public class EvaluarContrasenaVentana extends JDialog implements ActionListener 
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == btnEvaluar) {
-            JOptionPane.showMessageDialog(this, "Evaluando contraseña...", "Info", JOptionPane.INFORMATION_MESSAGE);
+            evaluarContrasena();
+        }
+    }
+
+    private void evaluarContrasena() {
+        String contrasena = new String(campoContrasena.getPassword()).trim();
+
+        if (contrasena.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Ingrese una contraseña para evaluar.",
+                    "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        String resultado = controlador.evaluarContrasena(contrasena, usuarioAutenticado);
+        String[] partes = resultado.split("\\|");
+
+        if (partes[0].equals("DÉBIL")) {
+            etiquetaMensaje.setText("Resultado: Contraseña DÉBIL. ¡Cámbiala!");
+            etiquetaMensaje.setForeground(Color.RED);
+            etiquetaSugerencia.setText("Sugerencia segura: " + partes[1]);
+            etiquetaSugerencia.setForeground(Color.BLUE);
+        } else {
+            etiquetaMensaje.setText("Resultado: Contraseña FUERTE.");
+            etiquetaMensaje.setForeground(Color.GREEN);
+            etiquetaSugerencia.setText(" ");
         }
     }
 }

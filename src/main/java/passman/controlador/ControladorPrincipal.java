@@ -1,11 +1,7 @@
 package passman.controlador;
 
 import passman.servicio.ServicioPassman;
-import passman.ui.LoginVentana;
-import passman.ui.MenuVentana;
-import passman.ui.RegistroVentana;
-import passman.ui.componentes.EditarContrasenaVentana;
-import passman.ui.componentes.EvaluarContrasenaVentana;
+import passman.ui.InterfazGrafica.*;
 
 import javax.swing.*;
 import java.util.List;
