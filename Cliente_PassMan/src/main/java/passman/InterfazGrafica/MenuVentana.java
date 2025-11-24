@@ -130,17 +130,43 @@ public class MenuVentana extends JFrame implements ActionListener {
         gbc.fill = GridBagConstraints.HORIZONTAL;
         
         JButton btnEditar = new JButton("Editar Contraseña Guardada");
+        JButton btnEliminar = new JButton("Eliminar Contraseña"); // <--- NUEVO BOTÓN
         JButton btnEvaluar = new JButton("Evaluar/Verificar Contraseña");
         
-        // --- ¡CORRECCIÓN DE NAVEGACIÓN! ---
-        // Los botones ahora llaman al controlador para abrir las ventanas
-        
+        // --- Acción de Editar ---
         btnEditar.addActionListener(e -> {
             controlador.abrirEdicion(this);
-            // Al volver, actualiza la bóveda por si hubo cambios
             cargarBoveda();
         });
+
+        // --- Acción de Eliminar ---
+        btnEliminar.addActionListener(e -> {
+            String input = JOptionPane.showInputDialog(this, "Ingrese el número (No.) de la contraseña a eliminar:");
+            if (input != null && !input.trim().isEmpty()) {
+                try {
+                    int indiceVisual = Integer.parseInt(input.trim());
+                    int indiceReal = indiceVisual - 1; // Ajuste de índice (visual 1 -> array 0)
+                    
+                    int confirm = JOptionPane.showConfirmDialog(this, 
+                        "¿Estás seguro de borrar la contraseña #" + indiceVisual + "?", 
+                        "Confirmar", JOptionPane.YES_NO_OPTION);
+                        
+                    if (confirm == JOptionPane.YES_OPTION) {
+                        boolean exito = controlador.eliminarContrasena(usuarioAutenticado, indiceReal);
+                        if (exito) {
+                            JOptionPane.showMessageDialog(this, "Eliminada correctamente.");
+                            cargarBoveda(); 
+                        } else {
+                            JOptionPane.showMessageDialog(this, "Error al eliminar (índice inválido).", "Error", JOptionPane.ERROR_MESSAGE);
+                        }
+                    }
+                } catch (NumberFormatException ex) {
+                    JOptionPane.showMessageDialog(this, "Por favor ingrese un número válido.", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
         
+        // --- Acción de Evaluar ---
         btnEvaluar.addActionListener(e -> {
             controlador.abrirEvaluacion(this);
         });
@@ -150,8 +176,11 @@ public class MenuVentana extends JFrame implements ActionListener {
         
         gbc.gridx = 0; gbc.gridy = 1;
         panel.add(btnEditar, gbc);
-        
+
         gbc.gridx = 0; gbc.gridy = 2;
+        panel.add(btnEliminar, gbc); 
+        
+        gbc.gridx = 0; gbc.gridy = 3;
         panel.add(btnEvaluar, gbc);
 
         return panel;

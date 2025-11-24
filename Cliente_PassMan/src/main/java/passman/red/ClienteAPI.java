@@ -107,4 +107,14 @@ public class ClienteAPI {
         }
         return null;
     }
+    public boolean eliminarCredencial(String usuario, int indice) {
+        Map<String, Object> data = Map.of(
+            "usuario", usuario,
+            "indice", indice
+        );
+        
+        Map<String, Object> respuesta = post("/credenciales/eliminar", data);
+        
+        return respuesta != null && "ok".equals(respuesta.get("status"));
+    }
 }

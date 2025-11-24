@@ -39,6 +39,9 @@ public class ControladorPrincipal {
     public boolean guardarContrasena(String usuario, String servicio, String contrasena) {
         return clienteAPI.guardarCredencial(usuario, servicio, contrasena);
     }
+    public boolean eliminarContrasena(String usuario, int indice) {
+        return clienteAPI.eliminarCredencial(usuario, indice);
+    }
 
     public String obtenerBovedaFormateada(String usuario) {
         // Obtenemos la lista desde la API
