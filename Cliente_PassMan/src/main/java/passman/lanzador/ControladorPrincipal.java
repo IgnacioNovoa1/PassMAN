@@ -71,11 +71,10 @@ public class ControladorPrincipal {
     }
 
     public boolean editarContrasena(String usuario, int indice, String nuevaContrasena) {
-        // (Implementación pendiente en API para editar, por ahora retorna falso)
-        return false; 
+        return clienteAPI.editarContrasena(usuario, indice, nuevaContrasena);
     }
 
-    // --- Navegación (Igual que antes) ---
+    // --- Navegación ---
 
     public void abrirMenuPrincipal(String usuario) {
         if (loginVentana != null) loginVentana.dispose();

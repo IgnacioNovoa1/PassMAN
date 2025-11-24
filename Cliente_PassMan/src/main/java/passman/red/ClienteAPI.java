@@ -75,9 +75,17 @@ public class ClienteAPI {
         return "ERROR|No se pudo conectar con el servidor.";
     }
 
-    // El editar aun no esta en la API, dejamos el cascaron
-    public boolean editarContrasena(String usuario, int indice, String nueva) {
-        return false; 
+    public boolean editarContrasena(String usuario, int indice, String nuevaContrasena) {
+        Map<String, Object> data = Map.of(
+            "usuario", usuario,
+            "indice", indice,
+            "nuevaContrasena", nuevaContrasena
+        );
+        
+
+        Map<String, Object> respuesta = post("/credenciales/editar", data);
+        
+        return respuesta != null && "ok".equals(respuesta.get("status"));
     }
 
     private Map<String, Object> post(String endpoint, Object bodyData) {

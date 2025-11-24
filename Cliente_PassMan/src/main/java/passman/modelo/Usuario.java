@@ -20,6 +20,7 @@ public class Usuario {
         this.passwordHash = passHash;
         this.salt = salt;
         this.iteraciones = iterac;
+        this.nombreUsuario = nomUser;
     }
     ///CONSTRUCTOR usuario existente en BD
     public Usuario(UUID idUsuario, String nomUser, String passHash, String salt, int iterac){
