@@ -81,4 +81,10 @@ public class ServicioPassman {
         return usuario != null && !usuario.trim().isEmpty() &&
                 password != null && !password.trim().isEmpty();
     }
+    public boolean editarContrasena(String usuario, int indice, String nuevaContrasena) {
+        if (indice < 0 || nuevaContrasena == null || nuevaContrasena.trim().isEmpty()) {
+            return false;
+        }
+        return servicioCred.editarCredencial(usuario, indice, nuevaContrasena);
+    }
 }
