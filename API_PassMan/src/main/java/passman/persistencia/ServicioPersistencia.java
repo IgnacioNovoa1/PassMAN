@@ -48,7 +48,7 @@ public class ServicioPersistencia {
                     "nombre_cifrado, apellido_cifrado, rut_cifrado, fecha_nac_cifrada, iv_personales) " +
                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try (Connection conn = conectar(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setObject(1, usuario.getIdUsuario());
+            pstmt.setObject(1, usuario.getIdUsuario(), java.sql.Types.OTHER);
             pstmt.setString(2, usuario.getNombreUsuario());
             pstmt.setString(3, usuario.getPasswordHash());
             pstmt.setString(4, usuario.getSalt());
@@ -78,7 +78,8 @@ public class ServicioPersistencia {
             pstmt.setString(6, usuario.getRutCifrado());
             pstmt.setString(7, usuario.getFechaNacCifrada());
             pstmt.setString(8, usuario.getIvPersonales());
-            pstmt.setObject(9, usuario.getIdUsuario()); 
+            pstmt.setObject(9, usuario.getIdUsuario(), java.sql.Types.OTHER); 
+            
             return pstmt.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -90,8 +91,8 @@ public class ServicioPersistencia {
     public boolean guardarCredencial(EntradaCredencial cred) {
         String sql = "INSERT INTO \"Credenciales\" (id_credencial, id_usuario, servicio, usuario_servicio, password_cifrada, iv) " + "VALUES (?, ?, ?, ?, ?, ?)";
         try (Connection conn = conectar(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setObject(1, cred.getIdCredencial());
-            pstmt.setObject(2, cred.getIdUsuario());
+            pstmt.setObject(1, cred.getIdCredencial(), java.sql.Types.OTHER);
+            pstmt.setObject(2, cred.getIdUsuario(), java.sql.Types.OTHER); 
             pstmt.setString(3, cred.getServicio());
             pstmt.setString(4, cred.getUsuarioServicio());
             pstmt.setString(5, cred.getPasswordCifrada());
@@ -107,7 +108,7 @@ public class ServicioPersistencia {
         List<EntradaCredencial> lista = new ArrayList<>();
         String sql = "SELECT * FROM \"Credenciales\" WHERE id_usuario = ?";
         try (Connection conn = conectar(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setObject(1, idUsuario);
+            pstmt.setObject(1, idUsuario, java.sql.Types.OTHER);
             try (ResultSet rs = pstmt.executeQuery()) {
                 while (rs.next()) {
                     lista.add(new EntradaCredencial(
@@ -133,7 +134,7 @@ public class ServicioPersistencia {
             pstmt.setString(2, cred.getUsuarioServicio());
             pstmt.setString(3, cred.getPasswordCifrada());
             pstmt.setString(4, cred.getIv());
-            pstmt.setObject(5, cred.getIdCredencial());
+            pstmt.setObject(5, cred.getIdCredencial(), java.sql.Types.OTHER);
             return pstmt.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -144,7 +145,7 @@ public class ServicioPersistencia {
     public boolean eliminarCredencial(UUID idCredencial) {
         String sql = "DELETE FROM \"Credenciales\" WHERE id_credencial = ?";
         try (Connection conn = conectar(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setObject(1, idCredencial);
+            pstmt.setObject(1, idCredencial, java.sql.Types.OTHER);
             return pstmt.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();
