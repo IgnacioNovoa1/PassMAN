@@ -1,11 +1,9 @@
 package passman.api;
 
 import org.springframework.web.bind.annotation.*;
-import passman.nucleo.servicio.ServicioAutenticacion;
 import passman.nucleo.servicio.ServicioPassman;
-
-
 import java.util.Map;
+import java.util.HashMap;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -19,11 +17,15 @@ public class AuthController {
 
         boolean exito = servicioPassman.iniciarSesion(usuario, password);
 
+        Map<String, Object> response = new HashMap<>();
         if (exito) {
-            return Map.of("status", "ok", "mensaje", "Login exitoso");
+            response.put("status", "ok");
+            response.put("mensaje", "Login exitoso");
         } else {
-            return Map.of("status", "error", "mensaje", "Credenciales incorrectas");
+            response.put("status", "error");
+            response.put("mensaje", "Credenciales incorrectas");
         }
+        return response;
     }
 
     @PostMapping("/registro")
@@ -35,10 +37,14 @@ public class AuthController {
 
         boolean exito = servicioPassman.registrarUsuario(usuario, rut, cumple, password);
 
+        Map<String, Object> response = new HashMap<>();
         if (exito) {
-            return Map.of("status", "ok", "mensaje", "Usuario creado");
+            response.put("status", "ok");
+            response.put("mensaje", "Usuario creado");
         } else {
-            return Map.of("status", "error", "mensaje", "Error al registrar (¿Usuario duplicado?)");
+            response.put("status", "error");
+            response.put("mensaje", "Error al registrar");
         }
+        return response;
     }
 }

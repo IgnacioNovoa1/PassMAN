@@ -34,7 +34,7 @@ services:
       - PASSMAN_DB_HOST=db-postgres
       - PASSMAN_DB_PASS=passman_secure_pass
       - PASSMAN_KMS_ENDPOINT=http://localstack:4566
-      - PASSMAN_KMS_ARN=arn:
+      - PASSMAN_KMS_ARN=
     depends_on:
       - db-postgres
       - localstack

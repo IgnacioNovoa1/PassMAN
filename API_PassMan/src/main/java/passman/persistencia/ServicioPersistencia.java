@@ -3,7 +3,6 @@ package passman.persistencia;
 import passman.Config;
 import passman.modelo.EntradaCredencial;
 import passman.modelo.Usuario;
-
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +14,8 @@ public class ServicioPersistencia {
     private Connection conectar() throws SQLException {
         return DriverManager.getConnection(Config.DB_URL, Config.DB_USER, Config.DB_PASS);
     }
-    ///MANEJO DE USUARIOS
+
+    // --- USUARIOS ---
     public Optional<Usuario> buscarUsuarioPorNombre(String nombreUsuario) {
         String sql = "SELECT * FROM \"Usuarios\" WHERE nombre_usuario = ?";
         try (Connection conn = conectar(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -64,7 +64,29 @@ public class ServicioPersistencia {
             return false;
         }
     }
-    ///MANEJO DE CREDENCIALES
+    
+    public boolean actualizarUsuario(Usuario usuario) {
+        String sql = "UPDATE \"Usuarios\" SET password_hash = ?, salt = ?, iteraciones = ?, " +
+                    "nombre_cifrado = ?, apellido_cifrado = ?, rut_cifrado = ?, " +
+                    "fecha_nac_cifrada = ?, iv_personales = ? WHERE id_usuario = ?";
+        try (Connection conn = conectar(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, usuario.getPasswordHash());
+            pstmt.setString(2, usuario.getSalt());
+            pstmt.setInt(3, usuario.getIteraciones());
+            pstmt.setString(4, usuario.getNombreCifrado());
+            pstmt.setString(5, usuario.getApellidoCifrado());
+            pstmt.setString(6, usuario.getRutCifrado());
+            pstmt.setString(7, usuario.getFechaNacCifrada());
+            pstmt.setString(8, usuario.getIvPersonales());
+            pstmt.setObject(9, usuario.getIdUsuario()); 
+            return pstmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    // --- CREDENCIALES ---
     public boolean guardarCredencial(EntradaCredencial cred) {
         String sql = "INSERT INTO \"Credenciales\" (id_credencial, id_usuario, servicio, usuario_servicio, password_cifrada, iv) " + "VALUES (?, ?, ?, ?, ?, ?)";
         try (Connection conn = conectar(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -80,31 +102,7 @@ public class ServicioPersistencia {
             return false;
         }
     }
-    public boolean actualizarUsuario(Usuario usuario) {
-        String sql = "UPDATE \"Usuarios\" SET " +
-                    "password_hash = ?, salt = ?, iteraciones = ?, " +
-                    "nombre_cifrado = ?, apellido_cifrado = ?, rut_cifrado = ?, " +
-                    "fecha_nac_cifrada = ?, iv_personales = ? " +
-                    "WHERE id_usuario = ?";
-        
-        try (Connection conn = conectar(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            
-            pstmt.setString(1, usuario.getPasswordHash());
-            pstmt.setString(2, usuario.getSalt());
-            pstmt.setInt(3, usuario.getIteraciones());
-            pstmt.setString(4, usuario.getNombreCifrado());
-            pstmt.setString(5, usuario.getApellidoCifrado());
-            pstmt.setString(6, usuario.getRutCifrado());
-            pstmt.setString(7, usuario.getFechaNacCifrada());
-            pstmt.setString(8, usuario.getIvPersonales());
-            pstmt.setObject(9, usuario.getIdUsuario()); 
 
-            return pstmt.executeUpdate() > 0;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
     public List<EntradaCredencial> cargarCredenciales(UUID idUsuario) {
         List<EntradaCredencial> lista = new ArrayList<>();
         String sql = "SELECT * FROM \"Credenciales\" WHERE id_usuario = ?";
