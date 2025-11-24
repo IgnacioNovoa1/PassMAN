@@ -23,6 +23,7 @@ services:
       - PERSISTENCE=1
     volumes:
       - ./localstack-data:/var/lib/localstack
+      - ./init-kms.sh:/etc/localstack/init/ready.d/init-kms.sh
 
   api-rest:
     build: .
@@ -34,7 +35,7 @@ services:
       - PASSMAN_DB_HOST=db-postgres
       - PASSMAN_DB_PASS=passman_secure_pass
       - PASSMAN_KMS_ENDPOINT=http://localstack:4566
-      - PASSMAN_KMS_ARN=
+      - PASSMAN_KMS_ARN=alias/passman-key
     depends_on:
       - db-postgres
       - localstack
