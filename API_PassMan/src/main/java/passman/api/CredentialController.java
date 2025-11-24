@@ -10,6 +10,7 @@ import java.util.HashMap;
 @RequestMapping("/api/credenciales")
 public class CredentialController {
 
+    // Instanciamos el servicio principal
     private final ServicioPassman servicioPassman = new ServicioPassman();
 
     @PostMapping("/guardar")
@@ -43,6 +44,24 @@ public class CredentialController {
         
         Map<String, String> respuesta = new HashMap<>();
         respuesta.put("resultado", resultado);
+        return respuesta;
+    }
+
+    // --- NUEVO ENDPOINT PARA EDITAR ---
+    @PostMapping("/editar")
+    public Map<String, Object> editar(@RequestBody Map<String, Object> body) {
+        String usuario = (String) body.get("usuario");
+        int indice = (Integer) body.get("indice"); 
+        String nuevaContrasena = (String) body.get("nuevaContrasena");
+
+        boolean exito = servicioPassman.editarContrasena(usuario, indice, nuevaContrasena);
+
+        Map<String, Object> respuesta = new HashMap<>();
+        if (exito) {
+            respuesta.put("status", "ok");
+        } else {
+            respuesta.put("status", "error");
+        }
         return respuesta;
     }
 }
