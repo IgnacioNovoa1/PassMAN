@@ -47,7 +47,7 @@ public class CredentialController {
         return respuesta;
     }
 
-    // --- NUEVO ENDPOINT PARA EDITAR ---
+    // --- NUEVO ENDPOINT PARA EDITAR Y ELIMINAR ---
     @PostMapping("/editar")
     public Map<String, Object> editar(@RequestBody Map<String, Object> body) {
         String usuario = (String) body.get("usuario");
@@ -64,4 +64,20 @@ public class CredentialController {
         }
         return respuesta;
     }
+    @PostMapping("/eliminar")
+    public Map<String, Object> eliminar(@RequestBody Map<String, Object> body) {
+        String usuario = (String) body.get("usuario");
+        int indice = (Integer) body.get("indice"); 
+
+        boolean exito = servicioPassman.eliminarContrasena(usuario, indice);
+
+        Map<String, Object> respuesta = new HashMap<>();
+        if (exito) {
+            respuesta.put("status", "ok");
+        } else {
+            respuesta.put("status", "error");
+        }
+        return respuesta;
+    }
 }
+
