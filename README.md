@@ -30,12 +30,22 @@ El backend se despliega utilizando **Docker Compose** y consta de tres servicios
 1.  **Clonar/Copiar** este repositorio al servidor.
 2.  **Configuración de Entorno:**
     * Revisar el archivo `docker-compose.yml`.
-    * **Importante:** La primera vez, es necesario levantar `localstack` independientemente para generar el ARN de la clave KMS y actualizar la variable `PASSMAN_KMS_ARN`.
-3.  **Ejecutar:**
+    * **Importante:** Asegurarse de que la variable PASSMAN_KMS_ARN apunte al alias fijo alias/passman-key.
+3. **Configurar Permisos (¡CRÍTICO!):** Para que la persistencia de claves funcione y el script de inicialización se ejecute correctamente, debes ejecutar estos comandos antes de levantar los servicios:
+    ```bash
+    # 1. Dar permisos de ejecución al script de auto-configuración de KMS
+    chmod +x init-kms.sh
+    
+    # 2. Asegurar permisos de escritura para la persistencia de LocalStack
+    # (Evita que se pierdan las claves al reiniciar el contenedor)
+    mkdir -p localstack-data
+    sudo chmod -R 777 localstack-data
+    ```
+4.  **Ejecutar:**
     ```bash
     sudo docker compose up -d --build
     ```
-4.  **Verificación:**
+5.  **Verificación:**
     Ejecutar `sudo docker ps` y confirmar que los 3 contenedores (`passman-api`, `passman-db`, `passman-kms`) tienen estado "Up".
 
 ##  Endpoints Principales
