@@ -60,7 +60,5 @@ public class EntradaCredencial {
     @Override
     public String toString(){
         return String.format("Servicio: %s (Usuario: %s)", servicio, usuarioServicio);
-    }
-
-
+    } 
 }
