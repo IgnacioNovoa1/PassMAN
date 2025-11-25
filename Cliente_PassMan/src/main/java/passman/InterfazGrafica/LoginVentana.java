@@ -76,13 +76,14 @@ public class LoginVentana extends JFrame implements ActionListener {
                 return;
             }
             
+            mostrarMensaje("Conectando...", Color.GRAY.darker()); 
+
             setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
             btnLogin.setEnabled(false);
 
             new SwingWorker<Boolean, Void>() {
                 @Override
                 protected Boolean doInBackground() throws Exception {
-                
                     return controlador.autenticarUsuario(usuario, password);
                 }
                 
@@ -90,9 +91,16 @@ public class LoginVentana extends JFrame implements ActionListener {
                 protected void done() {
                     try {
                         if (get()) {
-                            mostrarMensaje("¡Inicio de sesión exitoso!", Color.BLUE);
-                            controlador.abrirMenuPrincipal(usuario);
-                            dispose();
+                            mostrarMensaje("¡Inicio de sesión exitoso!", new Color(0, 100, 0));
+                            Timer timer = new Timer(1000, new ActionListener() {
+                                @Override
+                                public void actionPerformed(ActionEvent evt) {
+                                    controlador.abrirMenuPrincipal(usuario);
+                                    dispose();
+                                }
+                            });
+                            timer.setRepeats(false);
+                            timer.start();
                         } else {
                             mostrarMensaje("Error: Usuario o contraseña incorrectos.", Color.RED);
                         }
