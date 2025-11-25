@@ -28,14 +28,13 @@ public class MenuVentana extends JFrame implements ActionListener {
         setLocationRelativeTo(null); 
 
         tabbedPane = new JTabbedPane();
-        tabbedPane.addTab("🔑 Ver Contraseñas", crearPanelBoveda());
-        tabbedPane.addTab("➕ Guardar Nueva", crearPanelGuardar());
-        tabbedPane.addTab("⚙️ Opciones Avanzadas", crearPanelOpciones());
+        tabbedPane.addTab("Ver Contraseñas", crearPanelBoveda());
+        tabbedPane.addTab("Guardar Nueva", crearPanelGuardar());
+        tabbedPane.addTab("Opciones Avanzadas", crearPanelOpciones());
         
         add(tabbedPane, BorderLayout.CENTER);
         setVisible(true);
-        
-        // Carga la bóveda automáticamente al abrir
+
         cargarBoveda();
     }
 
@@ -50,9 +49,7 @@ public class MenuVentana extends JFrame implements ActionListener {
         JScrollPane scrollPane = new JScrollPane(areaBoveda);
         
         btnActualizarBoveda = new JButton("Actualizar Bóveda");
-        
-        // --- ¡CORRECCIÓN BUG 5! ---
-        // El listener ahora llama a cargarBoveda()
+
         btnActualizarBoveda.addActionListener(e -> {
             areaBoveda.setText("Cargando bóveda...");
             cargarBoveda();
@@ -70,13 +67,11 @@ public class MenuVentana extends JFrame implements ActionListener {
         new SwingWorker<String, Void>() {
             @Override
             protected String doInBackground() throws Exception {
-                // Tarea de fondo (Red)
                 return controlador.obtenerBovedaFormateada(usuarioAutenticado);
             }
             @Override
             protected void done() {
                 try {
-                    // Tarea de UI (Actualizar)
                     String bovedaFormateada = get();
                     areaBoveda.setText(bovedaFormateada);
                 } catch (Exception e) {
@@ -130,22 +125,20 @@ public class MenuVentana extends JFrame implements ActionListener {
         gbc.fill = GridBagConstraints.HORIZONTAL;
         
         JButton btnEditar = new JButton("Editar Contraseña Guardada");
-        JButton btnEliminar = new JButton("Eliminar Contraseña"); // <--- NUEVO BOTÓN
+        JButton btnEliminar = new JButton("Eliminar Contraseña");
         JButton btnEvaluar = new JButton("Evaluar/Verificar Contraseña");
-        
-        // --- Acción de Editar ---
+
         btnEditar.addActionListener(e -> {
             controlador.abrirEdicion(this);
             cargarBoveda();
         });
 
-        // --- Acción de Eliminar ---
         btnEliminar.addActionListener(e -> {
             String input = JOptionPane.showInputDialog(this, "Ingrese el número (No.) de la contraseña a eliminar:");
             if (input != null && !input.trim().isEmpty()) {
                 try {
                     int indiceVisual = Integer.parseInt(input.trim());
-                    int indiceReal = indiceVisual - 1; // Ajuste de índice (visual 1 -> array 0)
+                    int indiceReal = indiceVisual - 1;
                     
                     int confirm = JOptionPane.showConfirmDialog(this, 
                         "¿Estás seguro de borrar la contraseña #" + indiceVisual + "?", 
@@ -165,8 +158,7 @@ public class MenuVentana extends JFrame implements ActionListener {
                 }
             }
         });
-        
-        // --- Acción de Evaluar ---
+
         btnEvaluar.addActionListener(e -> {
             controlador.abrirEvaluacion(this);
         });
@@ -216,7 +208,7 @@ public class MenuVentana extends JFrame implements ActionListener {
                             campoServicio.setText("");
                             campoContrasenaNueva.setText("");
                             cargarBoveda();
-                            tabbedPane.setSelectedIndex(0); // Vuelve a la bóveda
+                            tabbedPane.setSelectedIndex(0);
                         } else {
                             JOptionPane.showMessageDialog(MenuVentana.this, "Error al guardar la contraseña.",
                                     "Error", JOptionPane.ERROR_MESSAGE);

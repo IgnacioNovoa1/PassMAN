@@ -7,7 +7,6 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-// Cambiado a JDialog para que sea una ventana modal
 public class EditarContrasenaVentana extends JDialog implements ActionListener {
     private final ControladorPrincipal controlador;
     private final String usuarioAutenticado;
@@ -16,7 +15,7 @@ public class EditarContrasenaVentana extends JDialog implements ActionListener {
     private JButton btnEditar;
 
     public EditarContrasenaVentana(MenuVentana owner, ControladorPrincipal controlador) {
-        super(owner, "Editar Contraseña Guardada", true); // Modal
+        super(owner, "Editar Contraseña Guardada", true);
         this.controlador = controlador;
         this.usuarioAutenticado = owner.getUsuarioAutenticado();
 
@@ -69,7 +68,7 @@ public class EditarContrasenaVentana extends JDialog implements ActionListener {
     private void editarContrasena() {
         try {
             int indiceSeleccionado = Integer.parseInt(campoIndice.getText().trim());
-            int indiceReal = indiceSeleccionado - 1; // Ajuste a índice base 0
+            int indiceReal = indiceSeleccionado - 1;
             String nuevaContrasena = new String(campoNuevaContrasena.getPassword()).trim();
 
             if (nuevaContrasena.isEmpty()) {
@@ -94,7 +93,7 @@ public class EditarContrasenaVentana extends JDialog implements ActionListener {
                             JOptionPane.showMessageDialog(EditarContrasenaVentana.this,
                                     "Contraseña #" + indiceSeleccionado + " actualizada con éxito.",
                                     "Éxito", JOptionPane.INFORMATION_MESSAGE);
-                            dispose(); // Cierra la ventana modal
+                            dispose();
                         } else {
                             JOptionPane.showMessageDialog(EditarContrasenaVentana.this,
                                     "Error: El número (índice) no es válido.",

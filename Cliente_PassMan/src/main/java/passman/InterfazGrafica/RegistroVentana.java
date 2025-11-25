@@ -17,7 +17,7 @@ public class RegistroVentana extends JDialog implements ActionListener {
     private JLabel etiquetaMensaje;
 
     public RegistroVentana(LoginVentana loginVentana, ControladorPrincipal controlador) {
-        super(loginVentana, "PassMan - Nuevo Registro", true); // Modal
+        super(loginVentana, "PassMan - Nuevo Registro", true);
         this.controlador = controlador;
         
         setSize(450, 350); 
@@ -25,7 +25,7 @@ public class RegistroVentana extends JDialog implements ActionListener {
         setLocationRelativeTo(loginVentana); 
 
         JPanel panel = new JPanel(new GridBagLayout());
-        panel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15)); // Margen
+        panel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(8, 8, 8, 8); 
         gbc.fill = GridBagConstraints.HORIZONTAL;
@@ -75,8 +75,7 @@ public class RegistroVentana extends JDialog implements ActionListener {
                 mostrarMensaje("Todos los campos son obligatorios.", Color.RED);
                 return;
             }
-            
-            // Deshabilita el botón mientras se registra
+
             btnRegistrar.setEnabled(false);
             setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 
@@ -91,7 +90,6 @@ public class RegistroVentana extends JDialog implements ActionListener {
                     try {
                         if (get()) {
                             mostrarMensaje("¡Registro exitoso! Ya puedes iniciar sesión.", Color.BLUE);
-                            // Espera 2 segundos y cierra
                             Timer timer = new Timer(2000, ae -> dispose());
                             timer.setRepeats(false);
                             timer.start();
