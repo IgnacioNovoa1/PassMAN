@@ -14,7 +14,6 @@ public class ControladorPrincipal {
     private MenuVentana menuVentana;
 
     public ControladorPrincipal() {
-        // Ahora usamos el cliente de red en lugar del servicio local
         this.clienteAPI = new ClienteAPI();
         iniciarAplicacion();
     }
@@ -26,30 +25,37 @@ public class ControladorPrincipal {
         });
     }
 
-    // --- Métodos que llaman a la API ---
+    // --- Métodos API (Login y Registro ahora retornan MAP) ---
 
-    public boolean autenticarUsuario(String usuario, String password) {
+    public Map<String, String> autenticarUsuarioMap(String usuario, String password) {
         return clienteAPI.login(usuario, password);
     }
 
-    public boolean registrarUsuario(String usuario, String rut, String cumpleanos, String password) {
+    public Map<String, String> registrarUsuarioMap(String usuario, String rut, String cumpleanos, String password) {
         return clienteAPI.registro(usuario, rut, cumpleanos, password);
+    }
+
+    public Map<String, String> recuperarUsuarioMap(String usuario, String codigo, String nuevaPass) {
+        return clienteAPI.recuperar(usuario, codigo, nuevaPass);
     }
 
     public boolean guardarContrasena(String usuario, String servicio, String contrasena) {
         return clienteAPI.guardarCredencial(usuario, servicio, contrasena);
     }
+    
     public boolean eliminarContrasena(String usuario, int indice) {
         return clienteAPI.eliminarCredencial(usuario, indice);
     }
+    
+    public boolean editarContrasena(String usuario, int indice, String nuevaContrasena) {
+        return clienteAPI.editarContrasena(usuario, indice, nuevaContrasena);
+    }
 
     public String obtenerBovedaFormateada(String usuario) {
-        // Obtenemos la lista desde la API
         List<Map<String, String>> boveda = clienteAPI.listarCredenciales(usuario);
         
-        // Formateamos para mostrar en el JTextArea
         if (boveda == null || boveda.isEmpty()) {
-            return "No hay contraseñas guardadas o error de conexión.";
+            return "No hay contraseñas guardadas o no hay conexión.";
         }
 
         StringBuilder sb = new StringBuilder();
@@ -60,7 +66,7 @@ public class ControladorPrincipal {
         for (int i = 0; i < boveda.size(); i++) {
             Map<String, String> entrada = boveda.get(i);
             String servicio = entrada.get("servicio");
-            String contrasena = entrada.get("contraseña"); // La API ya la devuelve descifrada
+            String contrasena = entrada.get("contraseña");
 
             sb.append(String.format("| %-4d | %-25s | %-30s |\n",
                     i + 1, servicio, contrasena));
@@ -72,12 +78,6 @@ public class ControladorPrincipal {
     public String evaluarContrasena(String contrasena, String usuario) {
         return clienteAPI.evaluarContrasena(usuario, contrasena);
     }
-
-    public boolean editarContrasena(String usuario, int indice, String nuevaContrasena) {
-        return clienteAPI.editarContrasena(usuario, indice, nuevaContrasena);
-    }
-
-    // --- Navegación ---
 
     public void abrirMenuPrincipal(String usuario) {
         if (loginVentana != null) loginVentana.dispose();
@@ -97,5 +97,9 @@ public class ControladorPrincipal {
 
     public void abrirEvaluacion(MenuVentana parent) {
         new EvaluarContrasenaVentana(parent, this).setVisible(true);
+    }
+    
+    public void abrirRecuperacion(LoginVentana parent) {
+        new RecuperarVentana(parent, this).setVisible(true);
     }
 }
