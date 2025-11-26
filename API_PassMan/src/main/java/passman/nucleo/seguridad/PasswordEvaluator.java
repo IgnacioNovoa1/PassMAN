@@ -1,6 +1,7 @@
 package passman.nucleo.seguridad;
 
 import passman.modelo.Usuario;
+import passman.cifrado.ServicioCifrado;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -14,7 +15,7 @@ import java.util.regex.Pattern;
  * - longitud mínima
  * - patrones: secuencias ascendentes/descendentes (abc, 123, cba, 321), repeticiones (aaaa, 1111)
  * - patrones aritméticos (pasos constantes p.ej. +2: 2,4,6,8)
- * - que no contenga datos personales (nombre, rut,   fecha nacimiento en formatos)
+ * - que no contenga datos personales (nombre, rut, fecha nacimiento en formatos)
  * - integracion con HIBP por medio de HibpClient
  */
 public class PasswordEvaluator {
@@ -23,9 +24,11 @@ public class PasswordEvaluator {
     private static final int RECOMMENDED_LENGTH = 12;
 
     private final HibpClient hibpClient;
+    private final ServicioCifrado  cifradoServicio;
 
-    public PasswordEvaluator(HibpClient hibpClient) {
+    public PasswordEvaluator(HibpClient hibpClient,  ServicioCifrado cifradoServicio) {
         this.hibpClient = hibpClient;
+        this.cifradoServicio = cifradoServicio;
     }
 
     public PasswordCheckResult evaluate(String password, Usuario usuario) {
@@ -215,23 +218,33 @@ public class PasswordEvaluator {
         }
 
         // Intentamos extraer rut (si lo guardas en claro; en tu modelo está cifrado, así que depende si tienes dato)
-        String rut = usuario.getRutCifrado(); // en tu modelo está cifrado; si tienes rut en claro, pásalo aquí
-        if (rut != null && !rut.isEmpty()) {
-            // limpiar puntos y guiones para comparar
-            String rawRut = rut.replaceAll("[^0-9kK]", "").toLowerCase();
-            if (rawRut.length() >= 4 && passLower.contains(rawRut)) {
-                matches.add("Contiene (parte del) RUT.");
-            }
-            // si contraseña contiene rut con guion/puntos
-            String withSep = rut.toLowerCase();
-            if (withSep.length() >= 4 && passLower.contains(withSep)) {
-                matches.add("Contiene (parte del) RUT.");
+        String rutCifrado = usuario.getRutCifrado(); // en tu modelo está cifrado; si tienes rut en claro, pásalo aquí
+        if (rutCifrado != null && !rutCifrado.isEmpty()) {
+            try {
+                // Se llama al servicio para descifrar el RUT.
+                String rutDescifrado = cifradoServicio.descifrar(rutCifrado);
+
+                // Limpiar puntos y guiones para comparar.
+                String rawRut = rutCifrado.replaceAll("[^0-9kK]", "").toLowerCase();
+
+                if (rawRut.length() >= 4 && passLower.contains(rawRut)) {
+                    matches.add("Contiene (parte del) RUT sin formato.");
+                }
+
+                // si contraseña contiene rut con guion/puntos
+                String withSep = rutCifrado.toLowerCase();
+                if (withSep.length() >= 4 && passLower.contains(withSep)) {
+                    matches.add("Contiene (parte del) RUT con formato.");
+                }
+            } catch (Exception e) {
+                // Manejar errores de descifrado. (Texto corrupto o llave incorrecta)
+                System.err.println("Error al descifrar RUT: " + e.getMessage());
             }
         }
 
         // Fecha de nacimiento (si la guardas en claro o en formatos predecibles)
-        String fecha = usuario.getFechaNacCifrada();
-        if (fecha != null && !fecha.isEmpty()) {
+        String fechaCifrada = usuario.getFechaNacCifrada();
+        if (fechaCifrada != null && !fechaCifrada.isEmpty()) {
             // intentamos parsear varios formatos
             List<DateTimeFormatter> fmts = Arrays.asList(
                     DateTimeFormatter.ofPattern("yyyy-MM-dd"),
@@ -240,9 +253,12 @@ public class PasswordEvaluator {
                     DateTimeFormatter.ofPattern("yyyyMMdd"),
                     DateTimeFormatter.ofPattern("ddMMyyyy")
             );
+
+            // Se llama al servicio para descifrar la fecha.
+            String fechaDescifrada = cifradoServicio.descifrar(fechaCifrada);
             for (DateTimeFormatter f : fmts) {
                 try {
-                    LocalDate dt = LocalDate.parse(fecha, f);
+                    LocalDate dt = LocalDate.parse(fechaDescifrada, f);
                     String ymd = dt.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
                     String dmy = dt.format(DateTimeFormatter.ofPattern("ddMMyyyy"));
                     String dash = dt.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
@@ -255,7 +271,7 @@ public class PasswordEvaluator {
                 } catch (Exception ignored) {}
             }
             // si fecha está en texto libre, compara substring
-            if (password.toLowerCase().contains(fecha.toLowerCase())) {
+            if (password.toLowerCase().contains(fechaDescifrada.toLowerCase())) {
                 matches.add("Contiene la fecha de nacimiento (texto exacto).");
             }
         }
@@ -263,11 +279,17 @@ public class PasswordEvaluator {
         // Si en tu modelo guardas nombre/apellido descifrado, agrégalos aquí
         String nombreC = usuario.getNombreCifrado();
         if (nombreC != null && !nombreC.isEmpty()) {
-            if (passLower.contains(nombreC.toLowerCase())) matches.add("Contiene el nombre personal.");
+            try {
+                String nombreDesc = cifradoServicio.descifrar(nombreC);
+                if (passLower.contains(nombreDesc.toLowerCase())) matches.add("Contiene el nombre personal.");
+            } catch (Exception ignored) {}
         }
         String apellidoC = usuario.getApellidoCifrado();
         if (apellidoC != null && !apellidoC.isEmpty()) {
-            if (passLower.contains(apellidoC.toLowerCase())) matches.add("Contiene el apellido personal.");
+            try {
+                String apellidoDesc = cifradoServicio.descifrar(apellidoC);
+                if (passLower.contains(apellidoDesc.toLowerCase())) matches.add("Contiene el apellido personal.");
+            } catch (Exception ignored) {}
         }
 
         return matches;
