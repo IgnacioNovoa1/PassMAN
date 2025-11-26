@@ -252,6 +252,7 @@ public class PasswordEvaluator {
                 LocalDate dt = LocalDate.parse(fechaDescifrada, DateTimeFormatter.ISO_LOCAL_DATE);
 
                 // Formatos débiles para buscar
+                String ddmm = dt.format(DateTimeFormatter.ofPattern("ddMM"));          // 1612
                 String ymd = dt.format(DateTimeFormatter.ofPattern("yyyyMMdd"));       // 19901231
                 String dmy = dt.format(DateTimeFormatter.ofPattern("ddMMyyyy"));       // 31121990
                 String year = dt.format(DateTimeFormatter.ofPattern("yyyy"));          // 1990
@@ -260,6 +261,7 @@ public class PasswordEvaluator {
 
                 // Lista de los substrings a buscar
                 List<String> substrings = Arrays.asList(
+                        ddmm.toLowerCase(),
                         ymd.toLowerCase(), dmy.toLowerCase(), year.toLowerCase(),
                         dash.toLowerCase(), slash.toLowerCase(), fechaDescifrada.toLowerCase()
                 );
@@ -277,15 +279,6 @@ public class PasswordEvaluator {
                     matches.add("Contiene fecha de nacimiento (o el año) en algún formato común.");
                 }
 
-            } catch (Exception ignored) {}
-        }
-
-        // Si en tu modelo guardas nombre/apellido descifrado, agrégalos aquí
-        String nombreC = usuario.getNombreCifrado();
-        if (nombreC != null && !nombreC.isEmpty()) {
-            try {
-                String nombreDesc = cifradoServicio.descifrar(nombreC);
-                if (passLower.contains(nombreDesc.toLowerCase())) matches.add("Contiene el nombre personal.");
             } catch (Exception ignored) {}
         }
         return matches;
