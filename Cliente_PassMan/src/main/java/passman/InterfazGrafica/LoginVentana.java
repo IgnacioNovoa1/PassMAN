@@ -5,6 +5,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Map;
 
 public class LoginVentana extends JFrame implements ActionListener {
 
@@ -81,17 +82,22 @@ public class LoginVentana extends JFrame implements ActionListener {
             setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
             btnLogin.setEnabled(false);
 
-            new SwingWorker<Boolean, Void>() {
+            new SwingWorker<Map<String, String>, Void>() {
                 @Override
-                protected Boolean doInBackground() throws Exception {
-                    return controlador.autenticarUsuario(usuario, password);
+                protected Map<String, String> doInBackground() throws Exception {
+                    return controlador.autenticarUsuarioMap(usuario, password);
                 }
                 
                 @Override
                 protected void done() {
                     try {
-                        if (get()) {
-                            mostrarMensaje("¡Inicio de sesión exitoso!", new Color(0, 100, 0));
+                        Map<String, String> respuesta = get();
+                        String status = respuesta.get("status");
+                        String mensaje = respuesta.get("mensaje");
+
+                        if ("ok".equals(status)) {
+                            mostrarMensaje("¡" + mensaje + "!", new Color(0, 100, 0)); 
+                            
                             Timer timer = new Timer(1000, new ActionListener() {
                                 @Override
                                 public void actionPerformed(ActionEvent evt) {
@@ -102,7 +108,7 @@ public class LoginVentana extends JFrame implements ActionListener {
                             timer.setRepeats(false);
                             timer.start();
                         } else {
-                            mostrarMensaje("Error: Usuario o contraseña incorrectos.", Color.RED);
+                            mostrarMensaje("Error: " + mensaje, Color.RED);
                         }
                     } catch (Exception ex) {
                         ex.printStackTrace();
