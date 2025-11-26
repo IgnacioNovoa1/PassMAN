@@ -118,10 +118,14 @@ public class ServicioPassman {
         if (contrasena == null || contrasena.trim().isEmpty()) return "DÉBIL|Vacía";
         Usuario usuarioObj = servicioUsers.obtenerUsuario(nombreUsuario);
         PasswordCheckResult resultado = passwordEvaluator.evaluate(contrasena, usuarioObj);
+
+        // Genera String con todos los mensajes/sugerencias de mejora
+        String detalleMensajes = String.join(". ", resultado.getMessages());
+
         if (resultado.getStrength() == PasswordStrength.FILTRADA || resultado.getStrength() == PasswordStrength.DEBIL) {
-            String sugerencia = servicioCred.generarContrasenaSegura(); 
-            return String.format("DÉBIL|%s Sugerencia: %s", String.join(" ", resultado.getMessages()), sugerencia);
+            String sugerencia = servicioCred.generarContrasenaSegura();
+            detalleMensajes = detalleMensajes + ". Sugerencia: " + sugerencia;
         }
-        return "FUERTE|¡Contraseña segura!";
+        return String.format("%s|%s", resultado.getStrength().name(), detalleMensajes);
     }
 }
