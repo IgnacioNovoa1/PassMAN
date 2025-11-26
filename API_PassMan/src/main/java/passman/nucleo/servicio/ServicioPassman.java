@@ -32,7 +32,7 @@ public class ServicioPassman {
         this.servicioCred = new ServicioCredenciales(persistencia, cifrador, servicioUsers);
         
         HibpClient hibpClient = new HibpClient();
-        this.passwordEvaluator = new PasswordEvaluator(hibpClient);
+        this.passwordEvaluator = new PasswordEvaluator(hibpClient, cifrador);
     }
 
     public Map<String, String> registrarUsuarioDetallado(String usuario, String rut, String cumpleanos, String password) {
