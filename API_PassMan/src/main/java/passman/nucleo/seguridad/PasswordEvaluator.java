@@ -245,35 +245,39 @@ public class PasswordEvaluator {
         // Fecha de nacimiento (si la guardas en claro o en formatos predecibles)
         String fechaCifrada = usuario.getFechaNacCifrada();
         if (fechaCifrada != null && !fechaCifrada.isEmpty()) {
-            // intentamos parsear varios formatos
-            List<DateTimeFormatter> fmts = Arrays.asList(
-                    DateTimeFormatter.ofPattern("yyyy-MM-dd"),
-                    DateTimeFormatter.ofPattern("dd-MM-yyyy"),
-                    DateTimeFormatter.ofPattern("dd/MM/yyyy"),
-                    DateTimeFormatter.ofPattern("yyyyMMdd"),
-                    DateTimeFormatter.ofPattern("ddMMyyyy")
-            );
+            try {
+                // Descifrar el dato
+                String fechaDescifrada = cifradoServicio.descifrar(fechaCifrada);
 
-            // Se llama al servicio para descifrar la fecha.
-            String fechaDescifrada = cifradoServicio.descifrar(fechaCifrada);
-            for (DateTimeFormatter f : fmts) {
-                try {
-                    LocalDate dt = LocalDate.parse(fechaDescifrada, f);
-                    String ymd = dt.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
-                    String dmy = dt.format(DateTimeFormatter.ofPattern("ddMMyyyy"));
-                    String dash = dt.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
-                    String slash = dt.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+                LocalDate dt = LocalDate.parse(fechaDescifrada, DateTimeFormatter.ISO_LOCAL_DATE);
 
-                    if (passLower.contains(ymd.toLowerCase()) || passLower.contains(dmy.toLowerCase())
-                            || passLower.contains(dash.toLowerCase()) || passLower.contains(slash.toLowerCase())) {
-                        matches.add("Contiene fecha de nacimiento en algún formato.");
+                // Formatos débiles para buscar
+                String ymd = dt.format(DateTimeFormatter.ofPattern("yyyyMMdd"));       // 19901231
+                String dmy = dt.format(DateTimeFormatter.ofPattern("ddMMyyyy"));       // 31121990
+                String year = dt.format(DateTimeFormatter.ofPattern("yyyy"));          // 1990
+                String dash = dt.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));    // 31-12-1990
+                String slash = dt.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));   // 31/12/1990
+
+                // Lista de los substrings a buscar
+                List<String> substrings = Arrays.asList(
+                        ymd.toLowerCase(), dmy.toLowerCase(), year.toLowerCase(),
+                        dash.toLowerCase(), slash.toLowerCase(), fechaDescifrada.toLowerCase()
+                );
+
+                // Buscar coincidencias en la contraseña
+                boolean found = false;
+                for (String sub : substrings) {
+                    if (passLower.contains(sub)) {
+                        found = true;
+                        break;
                     }
-                } catch (Exception ignored) {}
-            }
-            // si fecha está en texto libre, compara substring
-            if (password.toLowerCase().contains(fechaDescifrada.toLowerCase())) {
-                matches.add("Contiene la fecha de nacimiento (texto exacto).");
-            }
+                }
+
+                if (found) {
+                    matches.add("Contiene fecha de nacimiento (o el año) en algún formato común.");
+                }
+
+            } catch (Exception ignored) {}
         }
 
         // Si en tu modelo guardas nombre/apellido descifrado, agrégalos aquí
