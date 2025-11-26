@@ -19,7 +19,7 @@ public class LoginVentana extends JFrame implements ActionListener {
     public LoginVentana(ControladorPrincipal controlador) {
         this.controlador = controlador;
         setTitle("PassMan - Inicio de Sesión");
-        setSize(400, 250); 
+        setSize(400, 280);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null); 
 
@@ -48,14 +48,24 @@ public class LoginVentana extends JFrame implements ActionListener {
         gbc.gridx = 1; gbc.gridy = 1;
         panel.add(campoPassword, gbc);
 
-        JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 0));
+        JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 5));
         panelBotones.add(btnLogin);
         panelBotones.add(btnRegistrar);
         
+        JButton btnRecuperar = new JButton("¿Olvidaste tu contraseña?");
+        btnRecuperar.setBorderPainted(false);
+        btnRecuperar.setContentAreaFilled(false);
+        btnRecuperar.setForeground(Color.BLUE);
+        btnRecuperar.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        btnRecuperar.addActionListener(e -> controlador.abrirRecuperacion(this));
+
         gbc.gridx = 0; gbc.gridy = 2; gbc.gridwidth = 2; 
         panel.add(panelBotones, gbc);
 
-        gbc.gridx = 0; gbc.gridy = 3; gbc.gridwidth = 2; 
+        gbc.gridx = 0; gbc.gridy = 3; gbc.gridwidth = 2;
+        panel.add(btnRecuperar, gbc);
+
+        gbc.gridx = 0; gbc.gridy = 4; gbc.gridwidth = 2; 
         panel.add(etiquetaMensaje, gbc);
 
         add(panel, BorderLayout.CENTER);
