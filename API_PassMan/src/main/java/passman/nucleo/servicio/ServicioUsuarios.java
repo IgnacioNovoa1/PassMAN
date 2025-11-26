@@ -20,14 +20,16 @@ public class ServicioUsuarios {
     public boolean crearUsuario(String nombreUsuario, String rut, String fechaNac, String passwordHash, String salt, int iteraciones, String codigoRecuperacion) {
         String rutCifrado = cifrador.cifrar(rut);
         String fechaNacCifrado = cifrador.cifrar(fechaNac);
+        String nombreCifrado = cifrador.cifrar(nombreUsuario);
 
-        if (rutCifrado == null || fechaNacCifrado == null) {
+        if (rutCifrado == null || fechaNacCifrado == null  || nombreCifrado == null) {
             return false;
         }
 
         Usuario usuario = new Usuario(nombreUsuario, passwordHash, salt, iteraciones);
         usuario.setRutCifrado(rutCifrado);
         usuario.setFechaNacCifrada(fechaNacCifrado);
+        usuario.setNombreCifrado(nombreCifrado);
         usuario.setCodigoRecuperacion(codigoRecuperacion); 
         return persistencia.guardarUsuario(usuario);
     }

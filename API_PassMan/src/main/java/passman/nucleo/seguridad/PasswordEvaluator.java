@@ -288,14 +288,6 @@ public class PasswordEvaluator {
                 if (passLower.contains(nombreDesc.toLowerCase())) matches.add("Contiene el nombre personal.");
             } catch (Exception ignored) {}
         }
-        String apellidoC = usuario.getApellidoCifrado();
-        if (apellidoC != null && !apellidoC.isEmpty()) {
-            try {
-                String apellidoDesc = cifradoServicio.descifrar(apellidoC);
-                if (passLower.contains(apellidoDesc.toLowerCase())) matches.add("Contiene el apellido personal.");
-            } catch (Exception ignored) {}
-        }
-
         return matches;
     }
 }
