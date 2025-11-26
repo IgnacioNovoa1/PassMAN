@@ -12,11 +12,8 @@ public class ServicioAutenticacion {
         this.hasher = hasher;
     }
 
-    public boolean registrarUsuario(String nombreUsuario, String rut, String fechaNac, String passwordPlana) {
-        if (servicioUsuarios.existeUsuario(nombreUsuario)) {
-            return false;
-        }
-
+    public boolean registrarUsuario(String nombreUsuario, String rut, String fechaNac, String passwordPlana, String codigoRecuperacion) {
+        
         String[] hashResult;
         try {
             hashResult = hasher.hashPassword(passwordPlana);
@@ -28,7 +25,7 @@ public class ServicioAutenticacion {
         String salt = hashResult[1];
         int iteraciones = Integer.parseInt(hashResult[2]);
 
-        return servicioUsuarios.crearUsuario(nombreUsuario, rut, fechaNac, passwordHash, salt, iteraciones);
+        return servicioUsuarios.crearUsuario(nombreUsuario, rut, fechaNac, passwordHash, salt, iteraciones, codigoRecuperacion);
     }
 
     public boolean iniciarSesion(String nombreUsuario, String passwordPlana) {
@@ -49,24 +46,11 @@ public class ServicioAutenticacion {
         }
     }
 
-    public boolean cambiarPassword(String nombreUsuario, String nuevaPassword) {
-        Usuario usuario = servicioUsuarios.obtenerUsuario(nombreUsuario);
-        if (usuario == null) {
-            return false;
-        }
-
+    // Nuevo método para recuperación
+    public boolean restablecerPassword(String nombreUsuario, String codigo, String nuevaPassword) {
         try {
             String[] hashResult = hasher.hashPassword(nuevaPassword);
-            if (hashResult == null || hashResult.length != 3) {
-                return false;
-            }
-
-
-            usuario.setPasswordHash(hashResult[0]);
-            usuario.setSalt(hashResult[1]);
-            usuario.setIteraciones(Integer.parseInt(hashResult[2]));
-
-            return servicioUsuarios.actualizarUsuario(usuario);
+            return servicioUsuarios.recuperarUsuario(nombreUsuario, codigo, hashResult[0], hashResult[1], Integer.parseInt(hashResult[2]));
         } catch (Exception e) {
             return false;
         }

@@ -14,37 +14,28 @@ public class AuthController {
     public Map<String, Object> login(@RequestBody Map<String, String> body) {
         String usuario = body.get("usuario");
         String password = body.get("password");
-
         boolean exito = servicioPassman.iniciarSesion(usuario, password);
-
-        Map<String, Object> response = new HashMap<>();
-        if (exito) {
-            response.put("status", "ok");
-            response.put("mensaje", "Login exitoso");
-        } else {
-            response.put("status", "error");
-            response.put("mensaje", "Credenciales incorrectas");
-        }
-        return response;
+        
+        if (exito) return Map.of("status", "ok", "mensaje", "Login exitoso");
+        return Map.of("status", "error", "mensaje", "Usuario o contraseña incorrectos");
     }
 
     @PostMapping("/registro")
-    public Map<String, Object> registro(@RequestBody Map<String, String> body) {
-        String usuario = body.get("usuario");
-        String password = body.get("password");
-        String rut = body.get("rut");
-        String cumple = body.get("cumpleanos");
+    public Map<String, String> registro(@RequestBody Map<String, String> body) {
+        return servicioPassman.registrarUsuarioDetallado(
+            body.get("usuario"),
+            body.get("rut"),
+            body.get("cumpleanos"),
+            body.get("password")
+        );
+    }
 
-        boolean exito = servicioPassman.registrarUsuario(usuario, rut, cumple, password);
-
-        Map<String, Object> response = new HashMap<>();
-        if (exito) {
-            response.put("status", "ok");
-            response.put("mensaje", "Usuario creado");
-        } else {
-            response.put("status", "error");
-            response.put("mensaje", "Error al registrar");
-        }
-        return response;
+    @PostMapping("/recuperar")
+    public Map<String, String> recuperar(@RequestBody Map<String, String> body) {
+        return servicioPassman.recuperarCuenta(
+            body.get("usuario"),
+            body.get("codigo"),
+            body.get("nuevaPassword")
+        );
     }
 }

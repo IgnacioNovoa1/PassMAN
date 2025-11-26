@@ -16,7 +16,8 @@ public class ServicioUsuarios {
         this.cifrador = cifrador;
     }
 
-    public boolean crearUsuario(String nombreUsuario, String rut, String fechaNac, String passwordHash, String salt, int iteraciones) {
+    // Método actualizado con codigoRecuperacion
+    public boolean crearUsuario(String nombreUsuario, String rut, String fechaNac, String passwordHash, String salt, int iteraciones, String codigoRecuperacion) {
         String rutCifrado = cifrador.cifrar(rut);
         String fechaNacCifrado = cifrador.cifrar(fechaNac);
 
@@ -26,14 +27,18 @@ public class ServicioUsuarios {
 
         Usuario usuario = new Usuario(nombreUsuario, passwordHash, salt, iteraciones);
         usuario.setRutCifrado(rutCifrado);
-        usuario.setFechaNacCifrado(fechaNacCifrado);
-
+        usuario.setFechaNacCifrada(fechaNacCifrado);
+        usuario.setCodigoRecuperacion(codigoRecuperacion); 
         return persistencia.guardarUsuario(usuario);
+    }
+
+    // Método nuevo para recuperación
+    public boolean recuperarUsuario(String usuario, String codigo, String hash, String salt, int iteraciones) {
+        return persistencia.recuperarPassword(usuario, codigo, hash, salt, iteraciones);
     }
 
     public Usuario obtenerUsuario(String nombreUsuario) {
         Optional<Usuario> usuarioOpt = persistencia.buscarUsuarioPorNombre(nombreUsuario);
-
         return usuarioOpt.orElse(null);
     }
 
@@ -43,7 +48,7 @@ public class ServicioUsuarios {
     }
 
     public boolean existeUsuario(String nombreUsuario) {
-        return  persistencia.buscarUsuarioPorNombre(nombreUsuario).isPresent();
+        return persistencia.existeUsuario(nombreUsuario);
     }
 
     public boolean actualizarUsuario(Usuario usuario) {

@@ -15,6 +15,19 @@ public class ServicioPersistencia {
         return DriverManager.getConnection(Config.DB_URL, Config.DB_USER, Config.DB_PASS);
     }
 
+    public boolean existeUsuario(String nombreUsuario) {
+        String sql = "SELECT 1 FROM \"Usuarios\" WHERE nombre_usuario = ?";
+        try (Connection conn = conectar(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, nombreUsuario);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                return rs.next();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
     // --- USUARIOS ---
     public Optional<Usuario> buscarUsuarioPorNombre(String nombreUsuario) {
         String sql = "SELECT * FROM \"Usuarios\" WHERE nombre_usuario = ?";
@@ -32,8 +45,9 @@ public class ServicioPersistencia {
                     usuario.setNombreCifrado(rs.getString("nombre_cifrado"));
                     usuario.setApellidoCifrado(rs.getString("apellido_cifrado"));
                     usuario.setRutCifrado(rs.getString("rut_cifrado"));
-                    usuario.setFechaNacCifrado(rs.getString("fecha_nac_cifrada"));
+                    usuario.setFechaNacCifrada(rs.getString("fecha_nac_cifrada"));
                     usuario.setIvPersonales(rs.getString("iv_personales"));
+                    usuario.setCodigoRecuperacion(rs.getString("codigo_recuperacion"));
                     return Optional.of(usuario);
                 }
             }
@@ -44,9 +58,10 @@ public class ServicioPersistencia {
     }
 
     public boolean guardarUsuario(Usuario usuario) {
+        // Se agrega codigo_recuperacion al INSERT
         String sql = "INSERT INTO \"Usuarios\" (id_usuario, nombre_usuario, password_hash, salt, iteraciones, " +
-                    "nombre_cifrado, apellido_cifrado, rut_cifrado, fecha_nac_cifrada, iv_personales) " +
-                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                    "nombre_cifrado, apellido_cifrado, rut_cifrado, fecha_nac_cifrada, iv_personales, codigo_recuperacion) " +
+                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try (Connection conn = conectar(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setObject(1, usuario.getIdUsuario(), java.sql.Types.OTHER);
             pstmt.setString(2, usuario.getNombreUsuario());
@@ -58,6 +73,7 @@ public class ServicioPersistencia {
             pstmt.setString(8, usuario.getRutCifrado());
             pstmt.setString(9, usuario.getFechaNacCifrada());
             pstmt.setString(10, usuario.getIvPersonales());
+            pstmt.setString(11, usuario.getCodigoRecuperacion());
             return pstmt.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -79,7 +95,23 @@ public class ServicioPersistencia {
             pstmt.setString(7, usuario.getFechaNacCifrada());
             pstmt.setString(8, usuario.getIvPersonales());
             pstmt.setObject(9, usuario.getIdUsuario(), java.sql.Types.OTHER); 
-            
+            return pstmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    // --- NUEVO: Método específico para recuperación ---
+    public boolean recuperarPassword(String usuario, String codigo, String nuevoHash, String nuevoSalt, int iteraciones) {
+        String sql = "UPDATE \"Usuarios\" SET password_hash = ?, salt = ?, iteraciones = ? " +
+                    "WHERE nombre_usuario = ? AND codigo_recuperacion = ?";
+        try (Connection conn = conectar(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, nuevoHash);
+            pstmt.setString(2, nuevoSalt);
+            pstmt.setInt(3, iteraciones);
+            pstmt.setString(4, usuario);
+            pstmt.setString(5, codigo);
             return pstmt.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();
