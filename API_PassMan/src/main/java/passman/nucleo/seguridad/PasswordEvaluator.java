@@ -225,14 +225,14 @@ public class PasswordEvaluator {
                 String rutDescifrado = cifradoServicio.descifrar(rutCifrado);
 
                 // Limpiar puntos y guiones para comparar.
-                String rawRut = rutCifrado.replaceAll("[^0-9kK]", "").toLowerCase();
+                String rawRut = rutDescifrado.replaceAll("[^0-9kK]", "").toLowerCase();
 
                 if (rawRut.length() >= 4 && passLower.contains(rawRut)) {
                     matches.add("Contiene (parte del) RUT sin formato.");
                 }
 
                 // si contraseña contiene rut con guion/puntos
-                String withSep = rutCifrado.toLowerCase();
+                String withSep = rutDescifrado.toLowerCase();
                 if (withSep.length() >= 4 && passLower.contains(withSep)) {
                     matches.add("Contiene (parte del) RUT con formato.");
                 }
