@@ -31,7 +31,7 @@ public class PasswordEvaluator {
             pwnedCount = -1;
         }
         if (pwnedCount > 0) {
-            messages.add(String.format("CONTRASEÑA FILTRADA: encontrada %d veces en bases de datos públicas. ¡Usa otra!", pwnedCount));
+            messages.add(String.format("CONTRASEÑA FILTRADA: ha sido encontrada %d veces en bases de datos públicas. Por favor use otra", pwnedCount));
             return new PasswordCheckResult(PasswordStrength.FILTRADA, "#FF0000", messages, pwnedCount);
         }
 
@@ -46,10 +46,10 @@ public class PasswordEvaluator {
         List<String> weakPatterns = new ArrayList<>();
         if (length < MIN_LENGTH) weakPatterns.add("La contraseña es muy corta (mínimo " + MIN_LENGTH + " caracteres).");
 
-        if (isSequence(password, 3)) weakPatterns.add("Contiene secuencia (p.ej. 'abcd' o '1234').");
-        if (isReverseSequence(password, 3)) weakPatterns.add("Contiene secuencia inversa (p.ej. 'dcba' o '4321').");
-        if (isRepeatedChar(password, 4)) weakPatterns.add("Contiene repetición de un mismo carácter (p.ej. 'aaaa' o '1111').");
-        if (hasArithmeticPattern(password, 3)) weakPatterns.add("Contiene patrón aritmético (p.ej. '2468' o 'aceg').");
+        if (isSequence(password, 3)) weakPatterns.add("Contiene una secuencia (p.ej. 'abcd' o '1234').");
+        if (isReverseSequence(password, 3)) weakPatterns.add("Contiene una secuencia inversa (p.ej. 'dcba' o '4321').");
+        if (isRepeatedChar(password, 4)) weakPatterns.add("Contiene una repetición de un mismo carácter (p.ej. 'aaaa' o '1111').");
+        if (hasArithmeticPattern(password, 3)) weakPatterns.add("Contiene un patrón aritmético (p.ej. '2468' o 'aceg').");
 
         // 4) contiene datos personales
         List<String> personalMatches = checkPersonalDataSubstrings(password, usuario);
@@ -73,9 +73,9 @@ public class PasswordEvaluator {
         }
 
         // Recomendaciones de mejora
-        if (!hasUpper) messages.add("Añade al menos una letra mayúscula.");
-        if (!hasLower) messages.add("Añade al menos una letra minúscula.");
-        if (!hasDigit) messages.add("Añade al menos un dígito.");
+        if (!hasUpper) messages.add("Añade al menos una letra mayúscula por favor.");
+        if (!hasLower) messages.add("Añade al menos una letra minúscula por favor.");
+        if (!hasDigit) messages.add("Añade al menos un dígito por favor.");
         if (!hasSpecial) messages.add("Añade al menos un carácter especial (p.ej. !@#$%).");
         if (length < RECOMMENDED_LENGTH) messages.add("Considera aumentar la longitud a 12+ caracteres.");
 
@@ -159,10 +159,6 @@ public class PasswordEvaluator {
         return false;
     }
 
-    /**
-     * Detecta patrones aritméticos en la representación de caracteres.
-     * Por ejemplo "2468" (paso 2), "aceg" (paso 2 entre letras).
-     */
     private boolean hasArithmeticPattern(String s, int minLen) {
         if (s.length() < minLen) return false;
         for (int i = 0; i <= s.length() - minLen; i++) {
@@ -186,43 +182,32 @@ public class PasswordEvaluator {
         return Math.abs(d) <= 5;
     }
 
-    /**
-     * Revisa si la contraseña contiene trozos obvios de datos personales del Usuario.
-     * Busca:
-     *  - nombre de usuario / nombre (case-insensitive)
-     *  - rut (con o sin puntos, con o sin guión)
-     *  - fecha nac en formatos yyyyMMdd, ddMMyyyy, dd-MM-yyyy, dd/MM/yyyy, yyyy-MM-dd
-     */
     private List<String> checkPersonalDataSubstrings(String password, Usuario usuario) {
         List<String> matches = new ArrayList<>();
         if (usuario == null) return matches;
         String passLower = password.toLowerCase();
 
-        // Nombre usuario y nombreCifrado no siempre están en claro; si guardas versión clara, cambia aquí.
+
         if (usuario.getNombreUsuario() != null) {
             String nom = usuario.getNombreUsuario().toLowerCase();
             if (!nom.isEmpty() && passLower.contains(nom)) matches.add("Contiene el nombre de usuario o parte de él.");
         }
 
-        // Intentamos extraer rut (si lo guardas en claro; en tu modelo está cifrado, así que depende si tienes dato)
-        String rut = usuario.getRutCifrado(); // en tu modelo está cifrado; si tienes rut en claro, pásalo aquí
+
+        String rut = usuario.getRutCifrado();
         if (rut != null && !rut.isEmpty()) {
-            // limpiar puntos y guiones para comparar
             String rawRut = rut.replaceAll("[^0-9kK]", "").toLowerCase();
             if (rawRut.length() >= 4 && passLower.contains(rawRut)) {
                 matches.add("Contiene (parte del) RUT.");
             }
-            // si contraseña contiene rut con guion/puntos
             String withSep = rut.toLowerCase();
             if (withSep.length() >= 4 && passLower.contains(withSep)) {
                 matches.add("Contiene (parte del) RUT.");
             }
         }
 
-        // Fecha de nacimiento (si la guardas en claro o en formatos predecibles)
         String fecha = usuario.getFechaNacCifrada();
         if (fecha != null && !fecha.isEmpty()) {
-            // intentamos parsear varios formatos
             List<DateTimeFormatter> fmts = Arrays.asList(
                     DateTimeFormatter.ofPattern("yyyy-MM-dd"),
                     DateTimeFormatter.ofPattern("dd-MM-yyyy"),
@@ -244,13 +229,11 @@ public class PasswordEvaluator {
                     }
                 } catch (Exception ignored) {}
             }
-            // si fecha está en texto libre, compara substring
             if (password.toLowerCase().contains(fecha.toLowerCase())) {
                 matches.add("Contiene la fecha de nacimiento (texto exacto).");
             }
         }
 
-        // Si en tu modelo guardas nombre/apellido descifrado, agrégalos aquí
         String nombreC = usuario.getNombreCifrado();
         if (nombreC != null && !nombreC.isEmpty()) {
             if (passLower.contains(nombreC.toLowerCase())) matches.add("Contiene el nombre personal.");
