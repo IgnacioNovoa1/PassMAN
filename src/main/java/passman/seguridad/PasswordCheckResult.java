@@ -9,6 +9,7 @@ public class PasswordCheckResult {
     private final List<String> messages;
     private final int pwnedCount;
 
+
     public PasswordCheckResult(PasswordStrength strength, String colorHex, List<String> messages, int pwnedCount) {
         this.strength = strength;
         this.colorHex = colorHex;
