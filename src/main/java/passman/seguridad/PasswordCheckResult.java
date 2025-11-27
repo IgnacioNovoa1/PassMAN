@@ -7,7 +7,7 @@ public class PasswordCheckResult {
     private final PasswordStrength strength;
     private final String colorHex;
     private final List<String> messages;
-    private final int pwnedCount; // 0 si no está en HIBP
+    private final int pwnedCount;
 
     public PasswordCheckResult(PasswordStrength strength, String colorHex, List<String> messages, int pwnedCount) {
         this.strength = strength;
