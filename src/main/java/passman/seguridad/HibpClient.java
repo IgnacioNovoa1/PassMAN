@@ -6,18 +6,10 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.security.MessageDigest;
 
-/**
- * Cliente simple para la API Pwned Passwords (k-anonymity).
- * Método principal: isPwned(password) -> devuelve número de veces que aparece en la DB (0 si no).
- */
 public class HibpClient {
 
     private static final String API_RANGE_URL = "https://api.pwnedpasswords.com/range/";
 
-    /**
-     * Devuelve el recuento de apariciones de la contraseña en la BD de HIBP.
-     * Si hubo un error de red devuelve -1.
-     */
     public int getPwnedCount(String password) {
         try {
             String sha1 = sha1Hex(password).toUpperCase();
@@ -33,14 +25,12 @@ public class HibpClient {
 
             int code = conn.getResponseCode();
             if (code != 200) {
-                // error (podrías lanzar excepción o registrar)
                 return -1;
             }
 
             try (BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()))) {
                 String line;
                 while ((line = br.readLine()) != null) {
-                    // cada línea: SUFFIX:COUNT
                     String[] parts = line.split(":");
                     if (parts.length != 2) continue;
                     if (parts[0].equalsIgnoreCase(suffix)) {
