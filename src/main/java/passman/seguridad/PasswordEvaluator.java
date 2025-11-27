@@ -5,18 +5,9 @@ import passman.modelo.Usuario;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/**
- * Evalúa la fortaleza de una contraseña teniendo en cuenta:
- * - presencia de mayúsculas, minúsculas, dígitos, caracteres especiales
- * - longitud mínima
- * - patrones: secuencias ascendentes/descendentes (abc, 123, cba, 321), repeticiones (aaaa, 1111)
- * - patrones aritméticos (pasos constantes p.ej. +2: 2,4,6,8)
- * - que no contenga datos personales (nombre, rut,   fecha nacimiento en formatos)
- * - integracion con HIBP por medio de HibpClient
- */
+
 public class PasswordEvaluator {
 
     private static final int MIN_LENGTH = 8;
@@ -33,7 +24,6 @@ public class PasswordEvaluator {
 
         if (password == null) password = "";
 
-        // 1) HIBP check (prioritario)
         int pwnedCount = -1;
         try {
             pwnedCount = hibpClient.getPwnedCount(password);
