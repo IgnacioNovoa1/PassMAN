@@ -44,9 +44,16 @@ public class ServicioPassman {
             return error("RUT inválido. Revise el formato y dígito verificador.");
         }
 
-        if (cumpleanos == null || !cumpleanos.matches("^\\d{4}$")) {
-            return error("El cumpleaños debe ser de 4 dígitos numéricos (Ej: 2510).");
+        if (cumpleanos == null ||
+            !(cumpleanos.matches("^\\d{4}-\\d{2}-\\d{2}$") ||   
+            cumpleanos.matches("^\\d{2}-\\d{2}-\\d{4}$") ||   
+            cumpleanos.matches("^\\d{2}/\\d{2}/\\d{4}$") ||   
+            cumpleanos.matches("^\\d{8}$") ||                 
+            cumpleanos.matches("^\\d{2}\\d{2}\\d{4}$")       
+            )) {
+            return error("Formato de cumpleaños inválido. Usa yyyy-MM-dd, dd-MM-yyyy, dd/MM/yyyy, yyyyMMdd o ddMMyyyy.");
         }
+
 
         if (password == null || password.trim().isEmpty()) {
             return error("La contraseña maestra no puede estar vacía.");
