@@ -24,6 +24,11 @@ public class ClienteAPI {
                 .build();
         this.gson = new Gson();
     }
+    // Constructor para pruebas unitarias (permite mocks)
+    public ClienteAPI(HttpClient httpClient, Gson gson) {
+        this.httpClient = httpClient;
+        this.gson = gson;
+    }
 
     // --- AUTENTICACIÓN ---
     public Map<String, String> login(String usuario, String password) {
