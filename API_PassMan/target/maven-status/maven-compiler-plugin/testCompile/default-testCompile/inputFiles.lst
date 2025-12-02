@@ -1,0 +1,4 @@
+/home/ignacio/Proyecto/PassMAN/API_PassMan/src/test/java/passman/cifrado/ServicioHashingTest.java
+/home/ignacio/Proyecto/PassMAN/API_PassMan/src/test/java/passman/nucleo/seguridad/PasswordEvaluatorTest.java
+/home/ignacio/Proyecto/PassMAN/API_PassMan/src/test/java/passman/nucleo/servicio/ServicioAutenticacionTest.java
+/home/ignacio/Proyecto/PassMAN/API_PassMan/src/test/java/passman/nucleo/servicio/ServicioCredencialesTest.java

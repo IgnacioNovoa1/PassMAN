@@ -1,0 +1,4 @@
+passman/cifrado/ServicioHashingTest.class
+passman/nucleo/servicio/ServicioCredencialesTest.class
+passman/nucleo/servicio/ServicioAutenticacionTest.class
+passman/nucleo/seguridad/PasswordEvaluatorTest.class
