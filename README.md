@@ -28,3 +28,5 @@ Desde la raíz del proyecto:
 # Compilar y ejecutar
 mvn clean install
 java -jar target/passman-cliente-1.0.0.jar
+````
+Correr el archivo `src/main/java/passman/lanzador/Principal.java`

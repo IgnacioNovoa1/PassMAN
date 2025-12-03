@@ -1,0 +1,12 @@
+/home/ignacio/Proyecto/PassMAN/Cliente_PassMan/src/main/java/passman/ConfigCliente.java
+/home/ignacio/Proyecto/PassMAN/Cliente_PassMan/src/main/java/passman/InterfazGrafica/EditarContrasenaVentana.java
+/home/ignacio/Proyecto/PassMAN/Cliente_PassMan/src/main/java/passman/InterfazGrafica/EvaluarContrasenaVentana.java
+/home/ignacio/Proyecto/PassMAN/Cliente_PassMan/src/main/java/passman/InterfazGrafica/LoginVentana.java
+/home/ignacio/Proyecto/PassMAN/Cliente_PassMan/src/main/java/passman/InterfazGrafica/MenuVentana.java
+/home/ignacio/Proyecto/PassMAN/Cliente_PassMan/src/main/java/passman/InterfazGrafica/RecuperarVentana.java
+/home/ignacio/Proyecto/PassMAN/Cliente_PassMan/src/main/java/passman/InterfazGrafica/RegistroVentana.java
+/home/ignacio/Proyecto/PassMAN/Cliente_PassMan/src/main/java/passman/lanzador/ControladorPrincipal.java
+/home/ignacio/Proyecto/PassMAN/Cliente_PassMan/src/main/java/passman/lanzador/Principal.java
+/home/ignacio/Proyecto/PassMAN/Cliente_PassMan/src/main/java/passman/modelo/EntradaCredencial.java
+/home/ignacio/Proyecto/PassMAN/Cliente_PassMan/src/main/java/passman/modelo/Usuario.java
+/home/ignacio/Proyecto/PassMAN/Cliente_PassMan/src/main/java/passman/red/ClienteAPI.java
