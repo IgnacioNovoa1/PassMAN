@@ -5,6 +5,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.util.concurrent.ExecutionException;
 
 public class RegistroVentana extends JDialog implements ActionListener {
 
@@ -66,6 +68,7 @@ public class RegistroVentana extends JDialog implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == btnRegistrar) {
+            
             String usuario = campoUsuario.getText().trim();
             String rut = campoRut.getText().trim();
             String cumpleanos = campoCumpleanos.getText().trim();
@@ -75,7 +78,18 @@ public class RegistroVentana extends JDialog implements ActionListener {
                 mostrarMensaje("Todos los campos son obligatorios.", Color.RED);
                 return;
             }
+            
+            if (!rut.matches("\\d{8,9}")) {
+                mostrarMensaje("El formato del RUT no es válido. Use 8 o 9 dígitos sin guión.", Color.RED);
+                return;
+            }
 
+            if (!cumpleanos.matches("\\d{4}")) {
+                mostrarMensaje("El formato de Cumpleaños no es válido. Use DDMM (4 dígitos).", Color.RED);
+                return;
+            }
+            
+            mostrarMensaje("Intentando registrar...", Color.GRAY.darker());
             btnRegistrar.setEnabled(false);
             setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 
@@ -89,16 +103,29 @@ public class RegistroVentana extends JDialog implements ActionListener {
                 protected void done() {
                     try {
                         if (get()) {
-                            mostrarMensaje("¡Registro exitoso! Ya puedes iniciar sesión.", Color.BLUE);
+                            mostrarMensaje("¡Registro exitoso! Ya puedes iniciar sesión.", new Color(0, 100, 0));
                             Timer timer = new Timer(2000, ae -> dispose());
                             timer.setRepeats(false);
                             timer.start();
                         } else {
                             mostrarMensaje("Error: El nombre de usuario ya existe.", Color.RED);
                         }
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
-                        mostrarMensaje("Error de conexión al registrar.", Color.RED);
+                    } catch (ExecutionException ex) {
+                        Throwable causa = ex.getCause();
+                        
+                        if (causa instanceof IOException) {
+                            mostrarMensaje("Error de conexión. El servidor no responde o hay problemas de red.", Color.RED);
+                            causa.printStackTrace();
+                        } else if (causa != null) {
+                            mostrarMensaje("Error interno del sistema: " + causa.getMessage(), Color.RED);
+                            causa.printStackTrace();
+                        } else {
+                            mostrarMensaje("Ocurrió un error desconocido durante el registro.", Color.RED);
+                        }
+                        
+                    } catch (InterruptedException ex) {
+                        mostrarMensaje("La operación de registro fue interrumpida.", Color.ORANGE);
+                        Thread.currentThread().interrupt(); 
                     } finally {
                         btnRegistrar.setEnabled(true);
                         setCursor(Cursor.getDefaultCursor());

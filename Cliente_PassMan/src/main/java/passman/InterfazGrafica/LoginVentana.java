@@ -5,6 +5,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 
 public class LoginVentana extends JFrame implements ActionListener {
 
@@ -68,6 +69,7 @@ public class LoginVentana extends JFrame implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == btnLogin) {
+            
             String usuario = campoUsuario.getText().trim();
             String password = new String(campoPassword.getPassword()).trim();
 
@@ -90,7 +92,7 @@ public class LoginVentana extends JFrame implements ActionListener {
                 @Override
                 protected void done() {
                     try {
-                        if (get()) {
+                        if (get()) { 
                             mostrarMensaje("¡Inicio de sesión exitoso!", new Color(0, 100, 0));
                             Timer timer = new Timer(1000, new ActionListener() {
                                 @Override
@@ -104,9 +106,21 @@ public class LoginVentana extends JFrame implements ActionListener {
                         } else {
                             mostrarMensaje("Error: Usuario o contraseña incorrectos.", Color.RED);
                         }
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
-                        mostrarMensaje("Error de conexión. Revisa el servidor.", Color.RED);
+                    } catch (java.util.concurrent.ExecutionException ex) {
+                        Throwable causa = ex.getCause();
+                        
+                        if (causa instanceof IOException) {
+                            mostrarMensaje("Error de conexión. El servidor no responde o hay problemas de red.", Color.RED);
+                        } else if (causa != null) {
+                            mostrarMensaje("Error interno del sistema: " + causa.getMessage(), Color.RED);
+                            causa.printStackTrace();
+                        } else {
+                            mostrarMensaje("Ocurrió un error desconocido durante la autenticación.", Color.RED);
+                        }
+                        
+                    } catch (InterruptedException ex) {
+                        mostrarMensaje("La operación de autenticación fue interrumpida.", Color.ORANGE);
+                        Thread.currentThread().interrupt();
                     } finally {
                         setCursor(Cursor.getDefaultCursor());
                         btnLogin.setEnabled(true);

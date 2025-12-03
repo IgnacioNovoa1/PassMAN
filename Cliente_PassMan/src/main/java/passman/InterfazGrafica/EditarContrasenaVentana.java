@@ -6,6 +6,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.util.concurrent.ExecutionException;
 
 public class EditarContrasenaVentana extends JDialog implements ActionListener {
     private final ControladorPrincipal controlador;
@@ -93,16 +95,35 @@ public class EditarContrasenaVentana extends JDialog implements ActionListener {
                             JOptionPane.showMessageDialog(EditarContrasenaVentana.this,
                                     "Contraseña #" + indiceSeleccionado + " actualizada con éxito.",
                                     "Éxito", JOptionPane.INFORMATION_MESSAGE);
+                            
+                            if (getOwner() instanceof MenuVentana) {
+                                ((MenuVentana) getOwner()).cargarBoveda();
+                            }
+
                             dispose();
+                            
                         } else {
                             JOptionPane.showMessageDialog(EditarContrasenaVentana.this,
-                                    "Error: El número (índice) no es válido.",
+                                    "Error: El número (índice) no es válido o la operación fue rechazada.",
                                     "Error", JOptionPane.ERROR_MESSAGE);
                         }
-                    } catch (Exception ex) {
-                        JOptionPane.showMessageDialog(EditarContrasenaVentana.this,
-                                "Error de red al editar: " + ex.getMessage(),
-                                "Error", JOptionPane.ERROR_MESSAGE);
+                    } catch (ExecutionException ex) {
+                        Throwable causa = ex.getCause();
+                        String errorMsg = "Error al comunicarse con el servidor.";
+                        
+                        if (causa instanceof IOException) {
+                             errorMsg = "Error de Conexión: El servidor no responde al intentar editar.";
+                             System.err.println("Error de I/O al editar: " + causa.getMessage());
+                        } else if (causa != null) {
+                            errorMsg = "Error Interno al editar: " + causa.getMessage();
+                            causa.printStackTrace();
+                        }
+                        
+                        JOptionPane.showMessageDialog(EditarContrasenaVentana.this, errorMsg, "Error de Red", JOptionPane.ERROR_MESSAGE);
+                        
+                    } catch (InterruptedException ex) {
+                        JOptionPane.showMessageDialog(EditarContrasenaVentana.this, "Operación de edición interrumpida.", "Error", JOptionPane.ERROR_MESSAGE);
+                        Thread.currentThread().interrupt();
                     } finally {
                         btnEditar.setEnabled(true);
                         setCursor(Cursor.getDefaultCursor());

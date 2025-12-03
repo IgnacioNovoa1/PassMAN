@@ -6,6 +6,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.util.concurrent.ExecutionException;
 
 public class EvaluarContrasenaVentana extends JDialog implements ActionListener {
     private final ControladorPrincipal controlador;
@@ -17,7 +19,7 @@ public class EvaluarContrasenaVentana extends JDialog implements ActionListener 
     private JLabel etiquetaSugerencia;
     
     public EvaluarContrasenaVentana(MenuVentana owner, ControladorPrincipal controlador) {
-        super(owner, "Evaluar Contraseña", true); // Modal
+        super(owner, "Evaluar Contraseña", true);
         this.controlador = controlador;
         this.usuarioAutenticado = owner.getUsuarioAutenticado();
 
@@ -36,7 +38,7 @@ public class EvaluarContrasenaVentana extends JDialog implements ActionListener 
         etiquetaMensaje = new JLabel(" "); 
         etiquetaMensaje.setHorizontalAlignment(SwingConstants.CENTER);
         etiquetaMensaje.setFont(new Font("Arial", Font.BOLD, 14));
-        JLabel etiquetaContrasena = new JLabel("Contraseña:");
+        JLabel etiquetaContrasena = new JLabel("Contraseña a evaluar:");
         etiquetaSugerencia = new JLabel(" "); 
         etiquetaSugerencia.setVerticalAlignment(SwingConstants.TOP);
         etiquetaSugerencia.setFont(new Font("Arial", Font.PLAIN, 12));
@@ -87,9 +89,10 @@ public class EvaluarContrasenaVentana extends JDialog implements ActionListener 
 
         if (contrasena.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Ingrese una contraseña para evaluar.",
-                    "Error", JOptionPane.ERROR_MESSAGE);
+                    "Error de Entrada", JOptionPane.ERROR_MESSAGE);
 
-            etiquetaMensaje.setText("Error de entrada.");        
+            etiquetaMensaje.setText("Error de entrada.");
+            etiquetaMensaje.setForeground(Color.RED);
             return;
         }
 
@@ -99,7 +102,6 @@ public class EvaluarContrasenaVentana extends JDialog implements ActionListener 
         new SwingWorker<String, Void>() {
             @Override
             protected String doInBackground() throws Exception {
-
                 return controlador.evaluarContrasena(contrasena, usuarioAutenticado);
             }
             
@@ -107,28 +109,54 @@ public class EvaluarContrasenaVentana extends JDialog implements ActionListener 
             protected void done() {
                 try {
                     String resultado = get();
+                    
                     String[] partes = resultado.split("\\|");
 
-                    String mensajeResultado = "Resultado: Contraseña " + partes[0] + ".";
-                    String mensajeDetalle = partes[1];
+                    if (partes.length < 2) {
+                        throw new Exception("Formato de respuesta del servidor inválido. Faltan partes.");
+                    }
+                    
+                    String estadoResultado = partes[0].trim();
+                    String mensajeDetalle = partes[1].trim();
 
-                    if (partes[0].equals("DÉBIL")) {
+                    String mensajeResultado = "Resultado: Contraseña " + estadoResultado + ".";
+
+                    if (estadoResultado.equals("DÉBIL")) {
                         etiquetaMensaje.setText(mensajeResultado);
                         etiquetaMensaje.setForeground(Color.RED);
-
                         etiquetaSugerencia.setText("<html><p style='text-align: left;'>" + mensajeDetalle + "</p></html>"); 
                         etiquetaSugerencia.setForeground(Color.BLUE.darker());
-                    } else { 
+                    } else {
                         etiquetaMensaje.setText(mensajeResultado);
                         etiquetaMensaje.setForeground(new Color(0, 100, 0)); 
                         
                         etiquetaSugerencia.setText("<html>" + mensajeDetalle + "</html>");
                         etiquetaSugerencia.setForeground(new Color(0, 100, 0));
                     }
-                } catch (Exception ex) {
-                    etiquetaMensaje.setText("Error: Falló la evaluación.");
+                } catch (ExecutionException ex) {
+                    Throwable causa = ex.getCause();
+                    
+                    if (causa instanceof IOException) {
+                        etiquetaMensaje.setText("Error de Conexión. El servidor no responde.");
+                    } else if (causa != null) {
+                        etiquetaMensaje.setText("Error Interno del Servidor: " + causa.getMessage());
+                        causa.printStackTrace();
+                    } else {
+                        etiquetaMensaje.setText("Error de red desconocido.");
+                    }
                     etiquetaMensaje.setForeground(Color.RED);
                     etiquetaSugerencia.setText(" ");
+                    
+                } catch (InterruptedException ex) {
+                    etiquetaMensaje.setText("Operación interrumpida.");
+                    etiquetaMensaje.setForeground(Color.ORANGE);
+                    etiquetaSugerencia.setText(" ");
+                    Thread.currentThread().interrupt();
+                } catch (Exception ex) {
+                    etiquetaMensaje.setText("Error en el procesamiento del resultado: Falló la evaluación.");
+                    etiquetaMensaje.setForeground(Color.RED);
+                    etiquetaSugerencia.setText("Error de datos: El servidor devolvió un formato inesperado.");
+                    System.err.println("Error de formato/procesamiento: " + ex.getMessage());
                 } finally {
                     btnEvaluar.setEnabled(true);
                     setCursor(Cursor.getDefaultCursor());
