@@ -72,7 +72,7 @@ public class RegistroVentana extends JDialog implements ActionListener {
         // === FILAS ===
         agregarFila(tarjeta, gbc, row++, "Usuario:", campoUsuario);
         agregarFila(tarjeta, gbc, row++, "RUT (Ej: 12345678-9):", campoRut);
-        agregarFila(tarjeta, gbc, row++, "Cumpleaños (DDMM):", campoCumpleanos);
+        agregarFila(tarjeta, gbc, row++, "Cumpleaños (DDMMYYYY):", campoCumpleanos);
         agregarFila(tarjeta, gbc, row++, "Contraseña Maestra:", campoPassword);
 
         // Espacio
