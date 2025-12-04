@@ -17,70 +17,125 @@ public class LoginVentana extends JFrame implements ActionListener {
     private JButton btnRegistrar;
     private JLabel etiquetaMensaje;
 
+    // Paleta visual dark profesional
+    private static final Color COLOR_FONDO = new Color(35, 35, 35);
+    private static final Color COLOR_TARJETA = new Color(50, 50, 50);
+    private static final Color COLOR_TEXTO = new Color(230, 230, 230);
+    private static final Color COLOR_PRIMARIO = new Color(45, 120, 255);
+    private static final Color COLOR_BOTON_SECUNDARIO = new Color(80, 80, 80);
+
     public LoginVentana(ControladorPrincipal controlador) {
         this.controlador = controlador;
         setTitle("PassMan - Inicio de Sesión");
-        setSize(400, 280);
+        setSize(420, 310);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null); 
+        setLocationRelativeTo(null);
+        setResizable(false);
 
-        JPanel panel = new JPanel(new GridBagLayout());
+        // Fondo general
+        JPanel fondo = new JPanel(new GridBagLayout());
+        fondo.setBackground(COLOR_FONDO);
+
+        JPanel tarjeta = new JPanel(new GridBagLayout());
+        tarjeta.setBackground(COLOR_TARJETA);
+        tarjeta.setBorder(BorderFactory.createEmptyBorder(20, 25, 20, 25));
+
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(5, 5, 5, 5); 
+        gbc.insets = new Insets(8, 8, 8, 8);
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
         campoUsuario = new JTextField(20);
         campoPassword = new JPasswordField(20);
+
+        // Estilo de los inputs
+        campoUsuario.setBackground(new Color(30, 30, 30));
+        campoUsuario.setForeground(COLOR_TEXTO);
+        campoUsuario.setCaretColor(COLOR_TEXTO);
+        campoUsuario.setBorder(BorderFactory.createLineBorder(new Color(70, 70, 70)));
+
+        campoPassword.setBackground(new Color(30, 30, 30));
+        campoPassword.setForeground(COLOR_TEXTO);
+        campoPassword.setCaretColor(COLOR_TEXTO);
+        campoPassword.setBorder(BorderFactory.createLineBorder(new Color(70, 70, 70)));
+
         btnLogin = new JButton("Ingresar");
-        btnRegistrar = new JButton("Registrarse"); 
-        etiquetaMensaje = new JLabel(" "); 
+        btnRegistrar = new JButton("Registrarse");
+
+        // Estilo de botones principales
+        estilizarBoton(btnLogin, COLOR_PRIMARIO, Color.WHITE);
+        estilizarBoton(btnRegistrar, COLOR_BOTON_SECUNDARIO, COLOR_TEXTO);
+
+        etiquetaMensaje = new JLabel(" ");
         etiquetaMensaje.setHorizontalAlignment(SwingConstants.CENTER);
-        etiquetaMensaje.setFont(new Font("Arial", Font.BOLD, 12));
+        etiquetaMensaje.setFont(new Font("SansSerif", Font.BOLD, 13));
+        etiquetaMensaje.setForeground(COLOR_TEXTO);
+
+        // Labels estilo dark
+        JLabel labelUsuario = new JLabel("Usuario:");
+        labelUsuario.setForeground(COLOR_TEXTO);
+
+        JLabel labelPass = new JLabel("Contraseña:");
+        labelPass.setForeground(COLOR_TEXTO);
 
         gbc.gridx = 0; gbc.gridy = 0;
-        panel.add(new JLabel("Usuario:"), gbc);
+        tarjeta.add(labelUsuario, gbc);
 
-        gbc.gridx = 1; gbc.gridy = 0;
-        panel.add(campoUsuario, gbc);
+        gbc.gridx = 1;
+        tarjeta.add(campoUsuario, gbc);
 
         gbc.gridx = 0; gbc.gridy = 1;
-        panel.add(new JLabel("Contraseña:"), gbc);
+        tarjeta.add(labelPass, gbc);
 
-        gbc.gridx = 1; gbc.gridy = 1;
-        panel.add(campoPassword, gbc);
+        gbc.gridx = 1;
+        tarjeta.add(campoPassword, gbc);
 
-        JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 5));
+        JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.CENTER, 12, 5));
+        panelBotones.setBackground(COLOR_TARJETA);
         panelBotones.add(btnLogin);
         panelBotones.add(btnRegistrar);
-        
+
+        gbc.gridx = 0; gbc.gridy = 2; gbc.gridwidth = 2;
+        tarjeta.add(panelBotones, gbc);
+
+        // Botón de recuperación estilo link minimalista
         JButton btnRecuperar = new JButton("¿Olvidaste tu contraseña?");
+        btnRecuperar.setForeground(new Color(130, 160, 255));
+        btnRecuperar.setBackground(COLOR_TARJETA);
         btnRecuperar.setBorderPainted(false);
+        btnRecuperar.setFocusPainted(false);
         btnRecuperar.setContentAreaFilled(false);
-        btnRecuperar.setForeground(Color.BLUE);
         btnRecuperar.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         btnRecuperar.addActionListener(e -> controlador.abrirRecuperacion(this));
 
-        gbc.gridx = 0; gbc.gridy = 2; gbc.gridwidth = 2; 
-        panel.add(panelBotones, gbc);
+        gbc.gridy = 3;
+        tarjeta.add(btnRecuperar, gbc);
 
-        gbc.gridx = 0; gbc.gridy = 3; gbc.gridwidth = 2;
-        panel.add(btnRecuperar, gbc);
+        gbc.gridy = 4;
+        tarjeta.add(etiquetaMensaje, gbc);
 
-        gbc.gridx = 0; gbc.gridy = 4; gbc.gridwidth = 2; 
-        panel.add(etiquetaMensaje, gbc);
+        fondo.add(tarjeta);
 
-        add(panel, BorderLayout.CENTER);
-        
-        btnLogin.addActionListener(this); 
-        btnRegistrar.addActionListener(this); 
+        add(fondo, BorderLayout.CENTER);
+
+        btnLogin.addActionListener(this);
+        btnRegistrar.addActionListener(this);
 
         setVisible(true);
+    }
+
+    private void estilizarBoton(JButton boton, Color bg, Color fg) {
+        boton.setBackground(bg);
+        boton.setForeground(fg);
+        boton.setFocusPainted(false);
+        boton.setBorder(BorderFactory.createLineBorder(bg.darker()));
+        boton.setPreferredSize(new Dimension(120, 32));
+        boton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == btnLogin) {
-            
+
             String usuario = campoUsuario.getText().trim();
             String password = new String(campoPassword.getPassword()).trim();
 
@@ -88,8 +143,8 @@ public class LoginVentana extends JFrame implements ActionListener {
                 mostrarMensaje("Debe ingresar usuario y contraseña.", Color.RED);
                 return;
             }
-            
-            mostrarMensaje("Conectando...", Color.GRAY.darker()); 
+
+            mostrarMensaje("Conectando...", Color.LIGHT_GRAY);
 
             setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
             btnLogin.setEnabled(false);
@@ -99,7 +154,7 @@ public class LoginVentana extends JFrame implements ActionListener {
                 protected Map<String, String> doInBackground() throws Exception {
                     return controlador.autenticarUsuarioMap(usuario, password);
                 }
-                
+
                 @Override
                 protected void done() {
                     try {
@@ -108,14 +163,11 @@ public class LoginVentana extends JFrame implements ActionListener {
                         String mensaje = respuesta.get("mensaje");
 
                         if ("ok".equals(status)) {
-                            mostrarMensaje("¡" + mensaje + "!", new Color(0, 100, 0)); 
-                            
-                            Timer timer = new Timer(1000, new ActionListener() {
-                                @Override
-                                public void actionPerformed(ActionEvent evt) {
-                                    controlador.abrirMenuPrincipal(usuario);
-                                    dispose();
-                                }
+                            mostrarMensaje("¡" + mensaje + "!", new Color(0, 180, 0));
+
+                            Timer timer = new Timer(1000, evt -> {
+                                controlador.abrirMenuPrincipal(usuario);
+                                dispose();
                             });
                             timer.setRepeats(false);
                             timer.start();
@@ -124,7 +176,7 @@ public class LoginVentana extends JFrame implements ActionListener {
                         }
                     } catch (java.util.concurrent.ExecutionException ex) {
                         Throwable causa = ex.getCause();
-                        
+
                         if (causa instanceof IOException) {
                             mostrarMensaje("Error de conexión. El servidor no responde o hay problemas de red.", Color.RED);
                         } else if (causa != null) {
@@ -133,7 +185,7 @@ public class LoginVentana extends JFrame implements ActionListener {
                         } else {
                             mostrarMensaje("Ocurrió un error desconocido durante la autenticación.", Color.RED);
                         }
-                        
+
                     } catch (InterruptedException ex) {
                         mostrarMensaje("La operación de autenticación fue interrumpida.", Color.ORANGE);
                         Thread.currentThread().interrupt();
@@ -148,7 +200,7 @@ public class LoginVentana extends JFrame implements ActionListener {
             controlador.abrirRegistro(this);
         }
     }
-    
+
     private void mostrarMensaje(String texto, Color color) {
         etiquetaMensaje.setText(texto);
         etiquetaMensaje.setForeground(color);
