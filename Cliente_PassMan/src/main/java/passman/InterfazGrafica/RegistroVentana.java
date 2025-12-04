@@ -19,7 +19,7 @@ public class RegistroVentana extends JDialog implements ActionListener {
     private static final Color COLOR_FONDO = new Color(35, 35, 35);
     private static final Color COLOR_TARJETA = new Color(50, 50, 50);
     private static final Color COLOR_INPUT = new Color(30, 30, 30);
-    private static final Color COLOR_TEXTO = new Color(230, 230, 230);
+    private static final Color COLOR_TEXTO = new Color(250, 250, 250);
     private static final Color COLOR_BORDE_INPUT = new Color(70, 70, 70);
     private static final Color COLOR_PRIMARIO = new Color(45, 120, 255);
 

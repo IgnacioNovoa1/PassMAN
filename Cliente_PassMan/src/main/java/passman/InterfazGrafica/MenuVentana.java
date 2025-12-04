@@ -30,8 +30,78 @@ public class MenuVentana extends JFrame implements ActionListener {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
-        JPanel panelSuperior = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        // ======== DARK THEME GLOBAL ========
+        Color fondo = new Color(35, 35, 35);
+        Color panelOscuro = new Color(45, 45, 45);
+        Color panelMasOscuro = new Color(30, 30, 30);
+        Color textoClaro = new Color(250, 250, 250);
+
+        UIManager.put("OptionPane.background", panelOscuro);
+        UIManager.put("Panel.background", panelOscuro);
+        UIManager.put("OptionPane.messageForeground", textoClaro);
+
+        // ===================================
+        //  TABS — ESTILO A (tema oscuro uniforme)
+        // ===================================
+        UIManager.put("TabbedPane.selected", panelOscuro); // evita blanco brillante
+        UIManager.put("TabbedPane.contentAreaColor", panelOscuro);
+        UIManager.put("TabbedPane.shadow", panelOscuro);
+        UIManager.put("TabbedPane.darkShadow", panelOscuro);
+        UIManager.put("TabbedPane.highlight", panelOscuro);
+        UIManager.put("TabbedPane.light", panelOscuro);
+        UIManager.put("TabbedPane.focus", panelOscuro);
+
+        tabbedPane = new JTabbedPane();
+        tabbedPane.setBackground(panelMasOscuro);
+        tabbedPane.setForeground(textoClaro);
+        tabbedPane.setFont(new Font("SansSerif", Font.PLAIN, 13));
+        tabbedPane.setOpaque(true);
+
+        tabbedPane.addTab("Ver Contraseñas", crearPanelBoveda());
+        tabbedPane.addTab("Guardar Nueva", crearPanelGuardar());
+        tabbedPane.addTab("Opciones Avanzadas", crearPanelOpciones());
+
+        add(tabbedPane, BorderLayout.CENTER);
+        getContentPane().setBackground(fondo);
+
+        setVisible(true);
+
+        areaBoveda.setText("Cargando bóveda...");
+        cargarBoveda();
+    }
+
+    private JPanel crearPanelBoveda() {
+        Color fondo = new Color(35, 35, 35);
+        Color panelOscuro = new Color(45, 45, 45);
+        Color botones = new Color(60, 60, 60);
+        Color textoClaro = new Color(230, 230, 230);
+
+        JPanel panel = new JPanel(new BorderLayout(10, 10));
+        panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        panel.setBackground(fondo);
+
+        areaBoveda = new JTextArea();
+        areaBoveda.setEditable(false);
+        areaBoveda.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
+        areaBoveda.setBackground(panelOscuro);
+        areaBoveda.setForeground(textoClaro);
+
+        JScrollPane scrollPane = new JScrollPane(areaBoveda);
+        scrollPane.getViewport().setBackground(panelOscuro);
+
+        btnActualizarBoveda = new JButton("Actualizar Bóveda");
+        btnActualizarBoveda.setBackground(botones);
+        btnActualizarBoveda.setForeground(textoClaro);
+
+        btnActualizarBoveda.addActionListener(e -> {
+            areaBoveda.setText("Cargando bóveda...");
+            cargarBoveda();
+        });
+
+        // Botón cerrar sesión simple (como pediste)
         btnCerrarSesion = new JButton("Cerrar Sesión");
+        btnCerrarSesion.setBackground(botones);
+        btnCerrarSesion.setForeground(textoClaro);
 
         btnCerrarSesion.addActionListener(e -> {
             int confirm = JOptionPane.showConfirmDialog(
@@ -40,47 +110,19 @@ public class MenuVentana extends JFrame implements ActionListener {
                     "Confirmar Cierre de Sesión",
                     JOptionPane.YES_NO_OPTION
             );
-
             if (confirm == JOptionPane.YES_OPTION) {
                 dispose();
                 new LoginVentana(controlador);
             }
         });
 
-        panelSuperior.add(btnCerrarSesion);
-        add(panelSuperior, BorderLayout.NORTH);
-
-        tabbedPane = new JTabbedPane();
-        tabbedPane.addTab("Ver Contraseñas", crearPanelBoveda());
-        tabbedPane.addTab("Guardar Nueva", crearPanelGuardar());
-        tabbedPane.addTab("Opciones Avanzadas", crearPanelOpciones());
-
-        add(tabbedPane, BorderLayout.CENTER);
-        setVisible(true);
-
-        areaBoveda.setText("Cargando bóveda...");
-        cargarBoveda();
-    }
-
-    private JPanel crearPanelBoveda() {
-        JPanel panel = new JPanel(new BorderLayout(10, 10));
-        panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-
-        areaBoveda = new JTextArea();
-        areaBoveda.setEditable(false);
-        areaBoveda.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
-
-        JScrollPane scrollPane = new JScrollPane(areaBoveda);
-
-        btnActualizarBoveda = new JButton("Actualizar Bóveda");
-
-        btnActualizarBoveda.addActionListener(e -> {
-            areaBoveda.setText("Cargando bóveda...");
-            cargarBoveda();
-        });
+        JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 5));
+        panelBotones.setBackground(fondo);
+        panelBotones.add(btnActualizarBoveda);
+        panelBotones.add(btnCerrarSesion);
 
         panel.add(scrollPane, BorderLayout.CENTER);
-        panel.add(btnActualizarBoveda, BorderLayout.SOUTH);
+        panel.add(panelBotones, BorderLayout.SOUTH);
 
         return panel;
     }
@@ -94,6 +136,7 @@ public class MenuVentana extends JFrame implements ActionListener {
             protected String doInBackground() throws Exception {
                 return controlador.obtenerBovedaFormateada(usuarioAutenticado);
             }
+
             @Override
             protected void done() {
                 try {
@@ -102,16 +145,14 @@ public class MenuVentana extends JFrame implements ActionListener {
                 } catch (ExecutionException ex) {
                     Throwable causa = ex.getCause();
                     if (causa instanceof IOException) {
-                        areaBoveda.setText("Error de Conexión: No se pudo conectar con el servidor para obtener la bóveda.");
-                        System.err.println("Error de I/O al cargar bóveda: " + causa.getMessage());
+                        areaBoveda.setText("Error de Conexión: No se pudo conectar con el servidor.");
                     } else if (causa != null) {
-                        areaBoveda.setText("Error Interno al cargar la bóveda: " + causa.getMessage());
-                        causa.printStackTrace();
+                        areaBoveda.setText("Error Interno: " + causa.getMessage());
                     } else {
-                        areaBoveda.setText("Error desconocido al cargar la bóveda.");
+                        areaBoveda.setText("Error desconocido.");
                     }
                 } catch (InterruptedException ex) {
-                    areaBoveda.setText("La operación de carga fue interrumpida.");
+                    areaBoveda.setText("La operación fue interrumpida.");
                     Thread.currentThread().interrupt();
                 } finally {
                     setCursor(Cursor.getDefaultCursor());
@@ -121,32 +162,51 @@ public class MenuVentana extends JFrame implements ActionListener {
         }.execute();
     }
 
-    public String getUsuarioAutenticado() {
-        return usuarioAutenticado;
-    }
-
     private JPanel crearPanelGuardar() {
+        Color fondo = new Color(35, 35, 35);
+        Color panelOscuro = new Color(45, 45, 45);
+        Color botones = new Color(60, 60, 60);
+        Color textoClaro = new Color(230, 230, 230);
+
         JPanel panel = new JPanel(new GridBagLayout());
         panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        panel.setBackground(fondo);
+
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 10, 10, 10);
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
         campoServicio = new JTextField(25);
+        campoServicio.setBackground(panelOscuro);
+        campoServicio.setForeground(textoClaro);
+
         campoContrasenaNueva = new JPasswordField(25);
+        campoContrasenaNueva.setBackground(panelOscuro);
+        campoContrasenaNueva.setForeground(textoClaro);
+
         btnGuardar = new JButton("Guardar Contraseña");
+        btnGuardar.setBackground(botones);
+        btnGuardar.setForeground(textoClaro);
         btnGuardar.addActionListener(this);
 
         gbc.gridx = 0; gbc.gridy = 0; gbc.gridwidth = 2;
-        panel.add(new JLabel("Guardar una nueva contraseña en la bóveda:"), gbc);
+        JLabel lbl1 = new JLabel("Guardar una nueva contraseña:");
+        lbl1.setForeground(textoClaro);
+        panel.add(lbl1, gbc);
 
         gbc.gridx = 0; gbc.gridy = 1; gbc.gridwidth = 1;
-        panel.add(new JLabel("Nombre del Servicio/Web:"), gbc);
+        JLabel lbl2 = new JLabel("Servicio:");
+        lbl2.setForeground(textoClaro);
+        panel.add(lbl2, gbc);
+
         gbc.gridx = 1; gbc.gridy = 1;
         panel.add(campoServicio, gbc);
 
         gbc.gridx = 0; gbc.gridy = 2;
-        panel.add(new JLabel("Contraseña:"), gbc);
+        JLabel lbl3 = new JLabel("Contraseña:");
+        lbl3.setForeground(textoClaro);
+        panel.add(lbl3, gbc);
+
         gbc.gridx = 1; gbc.gridy = 2;
         panel.add(campoContrasenaNueva, gbc);
 
@@ -157,18 +217,30 @@ public class MenuVentana extends JFrame implements ActionListener {
     }
 
     private JPanel crearPanelOpciones() {
+        Color fondo = new Color(35, 35, 35);
+        Color botones = new Color(60, 60, 60);
+        Color textoClaro = new Color(230, 230, 230);
+
         JPanel panel = new JPanel(new GridBagLayout());
+        panel.setBackground(fondo);
+
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(15, 15, 15, 15);
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
         JButton btnEditar = new JButton("Editar Contraseña Guardada");
-        JButton btnEliminar = new JButton("Eliminar Contraseña");
-        JButton btnEvaluar = new JButton("Evaluar/Verificar Contraseña");
+        btnEditar.setBackground(botones);
+        btnEditar.setForeground(textoClaro);
 
-        btnEditar.addActionListener(e -> {
-            controlador.abrirEdicion(this);
-        });
+        JButton btnEliminar = new JButton("Eliminar Contraseña");
+        btnEliminar.setBackground(botones);
+        btnEliminar.setForeground(textoClaro);
+
+        JButton btnEvaluar = new JButton("Evaluar/Verificar Contraseña");
+        btnEvaluar.setBackground(botones);
+        btnEvaluar.setForeground(textoClaro);
+
+        btnEditar.addActionListener(e -> controlador.abrirEdicion(this));
 
         btnEliminar.addActionListener(e -> {
             String input = JOptionPane.showInputDialog(this, "Ingrese el número (No.) de la contraseña a eliminar:");
@@ -177,18 +249,21 @@ public class MenuVentana extends JFrame implements ActionListener {
                     int indiceVisual = Integer.parseInt(input.trim());
                     int indiceReal = indiceVisual - 1;
 
-                    int confirm = JOptionPane.showConfirmDialog(this,
-                            "¿Estás seguro de borrar la contraseña #" + indiceVisual + "?",
-                            "Confirmar", JOptionPane.YES_NO_OPTION);
+                    int confirm = JOptionPane.showConfirmDialog(
+                            this,
+                            "¿Seguro que deseas eliminar la contraseña #" + indiceVisual + "?",
+                            "Confirmar",
+                            JOptionPane.YES_NO_OPTION
+                    );
 
                     if (confirm == JOptionPane.YES_OPTION) {
-                        
                         setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
                         new SwingWorker<Boolean, Void>() {
                             @Override
                             protected Boolean doInBackground() throws Exception {
                                 return controlador.eliminarContrasena(usuarioAutenticado, indiceReal);
                             }
+
                             @Override
                             protected void done() {
                                 setCursor(Cursor.getDefaultCursor());
@@ -197,35 +272,28 @@ public class MenuVentana extends JFrame implements ActionListener {
                                         JOptionPane.showMessageDialog(MenuVentana.this, "Eliminada correctamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
                                         cargarBoveda();
                                     } else {
-                                        JOptionPane.showMessageDialog(MenuVentana.this, "Error al eliminar. Índice inválido o error del servidor.", "Error", JOptionPane.ERROR_MESSAGE);
+                                        JOptionPane.showMessageDialog(MenuVentana.this, "Error al eliminar.", "Error", JOptionPane.ERROR_MESSAGE);
                                     }
-                                } catch (ExecutionException ex) {
-                                    Throwable causa = ex.getCause();
-                                    String errorMsg = "Error al comunicarse con el servidor.";
-                                    if (causa instanceof IOException) {
-                                        errorMsg = "Error de conexión: El servidor no responde al intentar eliminar.";
-                                    } else if (causa != null) {
-                                        errorMsg = "Error interno al eliminar: " + causa.getMessage();
-                                        causa.printStackTrace();
-                                    }
-                                    JOptionPane.showMessageDialog(MenuVentana.this, errorMsg, "Error de Red", JOptionPane.ERROR_MESSAGE);
-                                } catch (InterruptedException ex) {
-                                    JOptionPane.showMessageDialog(MenuVentana.this, "Operación de eliminación interrumpida.", "Error", JOptionPane.ERROR_MESSAGE);
-                                    Thread.currentThread().interrupt();
+                                } catch (Exception ex) {
+                                    JOptionPane.showMessageDialog(MenuVentana.this, "Error de comunicación.", "Error", JOptionPane.ERROR_MESSAGE);
                                 }
                             }
                         }.execute();
                     }
+
                 } catch (NumberFormatException ex) {
-                    JOptionPane.showMessageDialog(this, "Por favor ingrese un número válido.", "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(this, "Debe ingresar un número válido.", "Error", JOptionPane.ERROR_MESSAGE);
                 }
             }
         });
 
         btnEvaluar.addActionListener(e -> controlador.abrirEvaluacion(this));
 
+        JLabel lblOpc = new JLabel("Opciones avanzadas:");
+        lblOpc.setForeground(textoClaro);
+
         gbc.gridx = 0; gbc.gridy = 0;
-        panel.add(new JLabel("Funcionalidades Adicionales:"), gbc);
+        panel.add(lblOpc, gbc);
 
         gbc.gridx = 0; gbc.gridy = 1;
         panel.add(btnEditar, gbc);
@@ -264,29 +332,24 @@ public class MenuVentana extends JFrame implements ActionListener {
                 protected void done() {
                     try {
                         if (get()) {
-                            JOptionPane.showMessageDialog(MenuVentana.this, "¡Contraseña guardada exitosamente!",
+                            JOptionPane.showMessageDialog(MenuVentana.this,
+                                    "¡Contraseña guardada exitosamente!",
                                     "Éxito", JOptionPane.INFORMATION_MESSAGE);
+
                             campoServicio.setText("");
                             campoContrasenaNueva.setText("");
                             cargarBoveda();
                             tabbedPane.setSelectedIndex(0);
+
                         } else {
-                            JOptionPane.showMessageDialog(MenuVentana.this, "Error al guardar la contraseña. (Servidor rechazó la operación).",
+                            JOptionPane.showMessageDialog(MenuVentana.this,
+                                    "Error al guardar la contraseña.",
                                     "Error", JOptionPane.ERROR_MESSAGE);
                         }
                     } catch (ExecutionException ex) {
-                        Throwable causa = ex.getCause();
-                        String errorMsg = "Error al comunicarse con el servidor.";
-                        if (causa instanceof IOException) {
-                             errorMsg = "Error de conexión: El servidor no responde al intentar guardar.";
-                             System.err.println("Error de I/O al guardar contraseña: " + causa.getMessage());
-                        } else if (causa != null) {
-                            errorMsg = "Error interno al guardar: " + causa.getMessage();
-                            causa.printStackTrace();
-                        }
-                        JOptionPane.showMessageDialog(MenuVentana.this, errorMsg, "Error de Red", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(MenuVentana.this,
+                                "Error de conexión.", "Error", JOptionPane.ERROR_MESSAGE);
                     } catch (InterruptedException ex) {
-                        JOptionPane.showMessageDialog(MenuVentana.this, "Operación de guardado interrumpida.", "Error", JOptionPane.ERROR_MESSAGE);
                         Thread.currentThread().interrupt();
                     } finally {
                         btnGuardar.setEnabled(true);
@@ -295,5 +358,9 @@ public class MenuVentana extends JFrame implements ActionListener {
                 }
             }.execute();
         }
+    }
+
+    public String getUsuarioAutenticado() {
+        return usuarioAutenticado;
     }
 }

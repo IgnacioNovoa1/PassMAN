@@ -10,51 +10,101 @@ import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 
 public class EditarContrasenaVentana extends JDialog implements ActionListener {
+
     private final ControladorPrincipal controlador;
     private final String usuarioAutenticado;
+
     private JTextField campoIndice;
     private JPasswordField campoNuevaContrasena;
     private JButton btnEditar;
+
+    // Paleta visual consistente con Login
+    private final Color fondo = new Color(35, 35, 35);
+    private final Color panelOscuro = new Color(40, 40, 40);
+    private final Color textoClaro = new Color(250, 250, 250);
+    private final Color azulResaltado = new Color(80, 150, 255);
+    private final Font fuenteGeneral = new Font("SansSerif", Font.PLAIN, 14);
+    private final Font fuenteNegrita = new Font("SansSerif", Font.BOLD, 14);
 
     public EditarContrasenaVentana(MenuVentana owner, ControladorPrincipal controlador) {
         super(owner, "Editar Contraseña Guardada", true);
         this.controlador = controlador;
         this.usuarioAutenticado = owner.getUsuarioAutenticado();
 
-        setSize(450, 200);
+        setSize(480, 450);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setLocationRelativeTo(owner);
 
+        // Panel principal
         JPanel panel = new JPanel(new GridBagLayout());
-        panel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
+        panel.setBackground(fondo);
+        panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(5, 5, 5, 5);
+        gbc.insets = new Insets(10, 10, 10, 10);
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
-        campoIndice = new JTextField(5);
-        campoNuevaContrasena = new JPasswordField(20);
+        // Campos estilizados
+        campoIndice = new JTextField();
+        campoIndice.setPreferredSize(new Dimension(80, 32));
+        campoIndice.setFont(fuenteGeneral);
+        campoIndice.setBackground(panelOscuro);
+        campoIndice.setForeground(textoClaro);
+        campoIndice.setCaretColor(textoClaro);
+        campoIndice.setBorder(BorderFactory.createLineBorder(new Color(70, 70, 70)));
+
+        campoNuevaContrasena = new JPasswordField();
+        campoNuevaContrasena.setPreferredSize(new Dimension(220, 32));
+        campoNuevaContrasena.setFont(fuenteGeneral);
+        campoNuevaContrasena.setBackground(panelOscuro);
+        campoNuevaContrasena.setForeground(textoClaro);
+        campoNuevaContrasena.setCaretColor(textoClaro);
+        campoNuevaContrasena.setBorder(BorderFactory.createLineBorder(new Color(70, 70, 70)));
+
         btnEditar = new JButton("Actualizar Contraseña");
+        btnEditar.setFont(fuenteNegrita);
+        btnEditar.setBackground(azulResaltado);
+        btnEditar.setForeground(Color.WHITE);
+        btnEditar.setFocusPainted(false);
+        btnEditar.setBorder(BorderFactory.createEmptyBorder(8, 12, 8, 12));
         btnEditar.addActionListener(this);
 
-        JLabel instruccion = new JLabel("<html>Primero vea el índice (No.) en la pestaña 'Ver Contraseñas'.</html>");
-        instruccion.setForeground(Color.BLUE.darker());
+        JLabel instruccion = new JLabel(
+                "<html>Primero vea el índice (No.) en la pestaña <b>Ver Contraseñas</b>.</html>"
+        );
+        instruccion.setFont(fuenteGeneral);
+        instruccion.setForeground(azulResaltado);
+
+        JLabel labelIndice = new JLabel("Número (índice) a editar:");
+        labelIndice.setFont(fuenteGeneral);
+        labelIndice.setForeground(textoClaro);
+
+        JLabel labelNueva = new JLabel("Nueva Contraseña:");
+        labelNueva.setFont(fuenteGeneral);
+        labelNueva.setForeground(textoClaro);
 
         int row = 0;
-        
+
         gbc.gridx = 0; gbc.gridy = row++; gbc.gridwidth = 2;
         panel.add(instruccion, gbc);
 
-        gbc.gridx = 0; gbc.gridy = row++; gbc.gridwidth = 1;
-        panel.add(new JLabel("Número (índice) a editar:"), gbc);
-        gbc.gridx = 1; gbc.gridy = row - 1;
+        gbc.gridwidth = 1;
+        gbc.gridx = 0; gbc.gridy = row;
+        panel.add(labelIndice, gbc);
+
+        gbc.gridx = 1;
         panel.add(campoIndice, gbc);
+        row++;
 
-        gbc.gridx = 0; gbc.gridy = row++;
-        panel.add(new JLabel("Nueva Contraseña:"), gbc);
-        gbc.gridx = 1; gbc.gridy = row - 1;
+        gbc.gridx = 0; gbc.gridy = row;
+        panel.add(labelNueva, gbc);
+
+        gbc.gridx = 1;
         panel.add(campoNuevaContrasena, gbc);
+        row++;
 
-        gbc.gridx = 0; gbc.gridy = row++; gbc.gridwidth = 2;
+        gbc.gridx = 0; gbc.gridy = row; gbc.gridwidth = 2;
+        gbc.anchor = GridBagConstraints.CENTER;
         panel.add(btnEditar, gbc);
 
         add(panel);
@@ -78,7 +128,7 @@ public class EditarContrasenaVentana extends JDialog implements ActionListener {
                         "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
-            
+
             btnEditar.setEnabled(false);
             setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 
@@ -87,43 +137,60 @@ public class EditarContrasenaVentana extends JDialog implements ActionListener {
                 protected Boolean doInBackground() throws Exception {
                     return controlador.editarContrasena(usuarioAutenticado, indiceReal, nuevaContrasena);
                 }
-                
+
                 @Override
                 protected void done() {
                     try {
                         if (get()) {
-                            JOptionPane.showMessageDialog(EditarContrasenaVentana.this,
+                            JOptionPane.showMessageDialog(
+                                    EditarContrasenaVentana.this,
                                     "Contraseña #" + indiceSeleccionado + " actualizada con éxito.",
-                                    "Éxito", JOptionPane.INFORMATION_MESSAGE);
-                            
+                                    "Éxito",
+                                    JOptionPane.INFORMATION_MESSAGE
+                            );
+
                             if (getOwner() instanceof MenuVentana) {
                                 ((MenuVentana) getOwner()).cargarBoveda();
                             }
 
                             dispose();
-                            
+
                         } else {
-                            JOptionPane.showMessageDialog(EditarContrasenaVentana.this,
+                            JOptionPane.showMessageDialog(
+                                    EditarContrasenaVentana.this,
                                     "Error: El número (índice) no es válido o la operación fue rechazada.",
-                                    "Error", JOptionPane.ERROR_MESSAGE);
+                                    "Error",
+                                    JOptionPane.ERROR_MESSAGE
+                            );
                         }
                     } catch (ExecutionException ex) {
                         Throwable causa = ex.getCause();
                         String errorMsg = "Error al comunicarse con el servidor.";
-                        
+
                         if (causa instanceof IOException) {
-                             errorMsg = "Error de Conexión: El servidor no responde al intentar editar.";
-                             System.err.println("Error de I/O al editar: " + causa.getMessage());
+                            errorMsg = "Error de Conexión: El servidor no responde al intentar editar.";
+                            System.err.println("Error I/O al editar: " + causa.getMessage());
                         } else if (causa != null) {
                             errorMsg = "Error Interno al editar: " + causa.getMessage();
                             causa.printStackTrace();
                         }
-                        
-                        JOptionPane.showMessageDialog(EditarContrasenaVentana.this, errorMsg, "Error de Red", JOptionPane.ERROR_MESSAGE);
-                        
+
+                        JOptionPane.showMessageDialog(
+                                EditarContrasenaVentana.this,
+                                errorMsg,
+                                "Error de Red",
+                                JOptionPane.ERROR_MESSAGE
+                        );
+
                     } catch (InterruptedException ex) {
-                        JOptionPane.showMessageDialog(EditarContrasenaVentana.this, "Operación de edición interrumpida.", "Error", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(
+                                EditarContrasenaVentana.this,
+                                "Operación de edición interrumpida.",
+                                "Error",
+                                JOptionPane.ERROR_MESSAGE
+                        );
                         Thread.currentThread().interrupt();
+
                     } finally {
                         btnEditar.setEnabled(true);
                         setCursor(Cursor.getDefaultCursor());
@@ -132,9 +199,12 @@ public class EditarContrasenaVentana extends JDialog implements ActionListener {
             }.execute();
 
         } catch (NumberFormatException ex) {
-            JOptionPane.showMessageDialog(this,
+            JOptionPane.showMessageDialog(
+                    this,
                     "Por favor, ingrese un número válido para el índice.",
-                    "Error", JOptionPane.ERROR_MESSAGE);
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE
+            );
         }
     }
 }
