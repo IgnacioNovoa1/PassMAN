@@ -61,7 +61,7 @@ public class RegistroVentana extends JDialog implements ActionListener {
         panel.add(campoRut, gbc);
 
         gbc.gridx = 0; gbc.gridy = row; gbc.weightx = 0.3;
-        panel.add(new JLabel("Cumpleaños (Formatos aceptados: yyyy-MM-dd, dd-MM-yyyy, dd/MM/yyyy, yyyyMMdd):"), gbc);
+        panel.add(new JLabel("Cumpleaños (DDMM):"), gbc);
         
         gbc.gridx = 1; gbc.gridy = row++; gbc.weightx = 0.7;
         panel.add(campoCumpleanos, gbc);

@@ -6,14 +6,12 @@ import java.awt.*;
 import java.util.Map;
 
 public class RecuperarVentana extends JDialog {
-    private final ControladorPrincipal controlador;
     private JTextField txtUsuario, txtCodigo;
     private JPasswordField txtNuevaPass;
     private JButton btnRecuperar;
 
     public RecuperarVentana(LoginVentana owner, ControladorPrincipal controlador) {
         super(owner, "Recuperar Cuenta", true);
-        this.controlador = controlador;
         setSize(400, 300);
         setLocationRelativeTo(owner);
 
